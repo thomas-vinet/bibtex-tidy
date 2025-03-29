@@ -31,3 +31,18 @@ test("curly (enforce braced values)", async () => {
 	const tidied = await bibtexTidy(input, { curly: true });
 	strictEqual(tidied.bibtex, output);
 });
+
+test("do not brace abbreviated months", async () => {
+	const input = bibtex`@article{foo, title={Foo}, month = mar }`;
+
+	const expected = bibtex`
+@article{foo,
+  title         = {Foo},
+  month         = mar
+}
+`;
+
+	const tidied = await bibtexTidy(input, { curly: true });
+	strictEqual(tidied.bibtex, expected);
+});
+//bibtex-tidy --curly --numeric --months --tab --align=13 --duplicates=key --no-escape --sort-fields --no-remove-dupe-fields YOUR_FILE.bib

@@ -2,7 +2,15 @@ import type { ASTProxy } from "../ASTProxy";
 import { type FieldNode, LiteralNode } from "../parsers/bibtexParser";
 import type { Transform } from "../types";
 
-const monthAliases: Record<string, string[]> = {
+/**
+ * It’s generally recommended to store months in BibTeX files using the macros jan, feb,
+ * and so on. Whether they’re recognised depends on the particular BibTeX style, but most
+ * of them do support those macros. Biber also supports these macros.
+ * - https://www.bibtex.com/f/month-field/
+ * - https://texdoc.org/serve/biber.pdf/0
+ */
+
+export const monthAliases: Record<string, string[]> = {
 	jan: ["1", "jan", "january"],
 	feb: ["2", "feb", "february"],
 	mar: ["3", "mar", "march"],
