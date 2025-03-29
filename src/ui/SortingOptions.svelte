@@ -29,7 +29,7 @@ $: {
 	<Option option="sort" bind:checked={sortChecked}>
 		<label>
 			Fields to sort by:
-			<textarea name="sortList" spellcheck="false" bind:value={sortValue} />
+			<textarea name="sortList" spellcheck="false" bind:value={sortValue}></textarea>
 		</label>
 		<p>
 			Space delimited, e.g: <code>key type publisher author</code>. For
@@ -52,7 +52,7 @@ $: {
 				name="sortFieldList"
 				spellcheck="false"
 				bind:value={sortFieldsValue}
-			/>
+			></textarea>
 		</label>
 		<p>Space delimited, e.g: <code>title author year</code></p>
 	</Option>

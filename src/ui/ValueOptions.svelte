@@ -49,7 +49,7 @@ $: {
 </script>
 
 <Collapsible open={true} title="Values">
-	<div id="valueOptions" />
+	<div id="valueOptions"></div>
 
 	<Option option="curly" bind:checked={curly} />
 
@@ -60,7 +60,7 @@ $: {
 				name="enclosingBracesList"
 				spellcheck="false"
 				bind:value={enclosingBracesValue}
-			/>
+			></textarea>
 		</label>
 		<p>
 			Space delimited, e.g: <code>title journal</code>.
@@ -74,7 +74,7 @@ $: {
 				name="removeBracesList"
 				spellcheck="false"
 				bind:value={removeBracesValue}
-			/>
+			></textarea>
 		</label>
 		<p>Space delimited, e.g: <code>title journal</code>.</p>
 	</Option>

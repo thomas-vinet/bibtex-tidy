@@ -42,7 +42,7 @@ $: {
 			placeholder="e.g. abstract keywords"
 			spellcheck="false"
 			bind:value={omitValue}
-		/>
+		></textarea>
 		<p>Space delimited, e.g: <code>id type publisher author</code></p>
 	</Option>
 
@@ -55,7 +55,7 @@ $: {
 	<Option option="generateKeys" bind:checked={generateKeysChecked}>
 		<label>
 			Template:
-			<textarea name="generateKeysTemplate" bind:value={generateKeysValue} />
+			<textarea name="generateKeysTemplate" bind:value={generateKeysValue}></textarea>
 		</label>
 		<p>
 			<a href="./manual/key-generation.html" target="_blank">

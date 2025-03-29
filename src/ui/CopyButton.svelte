@@ -23,6 +23,7 @@ const handleCopy = () => {
 	class="btn"
 	id="copy"
 	title="Copy bibtex"
+	aria-label="Copy bibtex"
 	on:click={handleCopy}
 	class:copied={showAsCopied}
 >
