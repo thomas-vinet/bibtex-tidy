@@ -63,7 +63,7 @@ export function testCLI(
 
 	const warnings = proc.stderr
 		.split("\n")
-		.filter((line) => line.includes(": "))
+		.filter((line) => line.includes(": ") && !line.startsWith("NOTICE:"))
 		.map((line) => line.split(":")[0] ?? line);
 
 	for (const tmpFile of files) {

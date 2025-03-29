@@ -5426,16 +5426,23 @@ async function tidyToOutputFile(result, path, options) {
   await writeFile(path, result.bibtex, "utf8");
   const log = [];
   for (const warning of result.warnings) {
-    log.push(`${warning.code}: ${warning.message}`);
+    log.push({
+      level: "error",
+      message: `${warning.code}: ${warning.message}`
+    });
   }
-  log.push(`Done. Successfully tidied ${result.count} entries.`);
+  log.push({
+    level: "info",
+    message: `Done. Successfully tidied ${result.count} entries.`
+  });
   if (options.merge) {
     const dupes = result.warnings.filter((w) => w.code === "DUPLICATE_ENTRY");
-    log.push(`${dupes.length} entries merged`);
+    log.push({ level: "info", message: `${dupes.length} entries merged` });
   }
   if (!options.quiet) {
-    process.stdout.write(`${log.join("\n")}
-`);
+    for (const { level, message } of log) {
+      console[level === "error" ? "error" : "log"](message);
+    }
   }
 }
 async function readStdin() {

@@ -12,8 +12,10 @@ test("duplicate key warnings", async () => {
 		@article{bar,
 			title={bar}
 		}`;
-	const tidied1 = await bibtexTidy(input, { duplicates: ["key"] }, ["api"]);
+	const tidied1 = await bibtexTidy(input, { duplicates: ["key"] });
 	strictEqual(tidied1.api?.warnings.length, 1);
+	strictEqual(tidied1.web?.warnings.length, 1);
+	strictEqual(tidied1.cli?.warnings.length, 1);
 });
 
 test("duplicate DOI warnings", async () => {
@@ -30,8 +32,10 @@ test("duplicate DOI warnings", async () => {
 			title={moo},
 			doi=123
 		}`;
-	const tidied1 = await bibtexTidy(input, { duplicates: ["doi"] }, ["api"]);
+	const tidied1 = await bibtexTidy(input, { duplicates: ["doi"] });
 	strictEqual(tidied1.api?.warnings.length, 1);
+	strictEqual(tidied1.web?.warnings.length, 1);
+	strictEqual(tidied1.cli?.warnings.length, 1);
 });
 
 test("duplicate citation warnings", async () => {
@@ -85,8 +89,10 @@ test("duplicate citation warnings", async () => {
 			title={Foo},
 			number={2}
 		}`;
-	const tidied = await bibtexTidy(input, { duplicates: ["citation"] }, ["api"]);
+	const tidied = await bibtexTidy(input, { duplicates: ["citation"] });
 	strictEqual(tidied.api?.warnings.length, 2);
+	strictEqual(tidied.web?.warnings.length, 2);
+	strictEqual(tidied.cli?.warnings.length, 2);
 });
 
 test("duplicate abstract warnings", async () => {
@@ -104,6 +110,8 @@ test("duplicate abstract warnings", async () => {
 			abstract={Something completely different}
 		}`;
 
-	const tidied = await bibtexTidy(input, { duplicates: ["abstract"] }, ["api"]);
+	const tidied = await bibtexTidy(input, { duplicates: ["abstract"] });
 	strictEqual(tidied.api?.warnings.length, 1);
+	strictEqual(tidied.web?.warnings.length, 1);
+	strictEqual(tidied.cli?.warnings.length, 1);
 });

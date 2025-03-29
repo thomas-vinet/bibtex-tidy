@@ -34,24 +34,26 @@ let dupes = result.warnings.filter((w) => w.code === "DUPLICATE_ENTRY");
 		Tidied {result.count} entries.
 
 		{#if warnings.length > 0}
-			<ul>
+			<ul class="warning-list">
 				{#each warnings as warning}
 					<li>${warning.message}</li>
 				{/each}
 			</ul>
 		{/if}
 
-		{#if options.merge}
-			{#if dupes.length === 0}
-				No duplicates
-			{:else}
-				<strong>{dupes.length} merged:</strong>
-				<ul>
-					{#each dupes as dupe}
-						<li>{dupe.message}</li>
-					{/each}
-				</ul>
-			{/if}
+		{#if dupes.length === 0}
+			No duplicates
+		{:else}
+			<strong>
+				{dupes.length}
+				{dupes.length === 1 ? 'duplicate' : 'duplicates'}
+				{options.merge ? 'merged' : 'found'}:
+			</strong>
+			<ul class="warning-list">
+				{#each dupes as dupe}
+					<li>{dupe.message}</li>
+				{/each}
+			</ul>
 		{/if}
 	</div>
 </div>
@@ -65,6 +67,9 @@ let dupes = result.warnings.filter((w) => w.code === "DUPLICATE_ENTRY");
 		gap: 20px;
 		margin-left: 8px;
 		align-items: center;
+	}
+	.warning-list {
+		padding-left: 18px;
 	}
 	svg {
 		flex: 0 0 24px;
