@@ -23,11 +23,11 @@
 		"bibtex-tidy.0"
 	],
 	"scripts": {
-		"build": "node -r esbuild-register build.ts",
-		"serve": "node -r esbuild-register build.ts --serve",
+		"build": "node build.ts",
+		"serve": "node build.ts --serve",
 		"test": "npm run test:unit && npm run test:e2e",
-		"test:unit": "node -r esbuild-register --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info  \"src/**/*.spec.ts*\"",
-		"test:e2e": "node -r esbuild-register build.ts  --no-defs && node -r esbuild-register test/index.ts",
+		"test:unit": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info  \"src/**/*.spec.ts*\"",
+		"test:e2e": "node build.ts --no-defs && node -r esbuild-register test/index.ts",
 		"typecheck": "tsc --noEmit",
 		"cover": "./scripts/cover.sh",
 		"preversion": "git pull --rebase",
@@ -38,6 +38,12 @@
 	},
 	"engines": {
 		"node": ">12"
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"version": ">=24"
+		}
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.3",
