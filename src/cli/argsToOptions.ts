@@ -1,6 +1,6 @@
-import { optionDefinitions } from "../optionDefinitions";
-import type { CLIOptions } from "../optionUtils";
-import { parseCLIArguments } from "../parsers/argsParser";
+import { optionDefinitions } from "../optionDefinitions.ts";
+import type { CLIOptions } from "../optionUtils.ts";
+import { parseCLIArguments } from "../parsers/argsParser.ts";
 
 const cliOptions: Record<string, { option: keyof CLIOptions; value: unknown }> =
 	{};

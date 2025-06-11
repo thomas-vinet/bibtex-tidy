@@ -1,7 +1,7 @@
-import { checkForDuplicates } from "../duplicates";
-import type { MergeStrategy, OptionsNormalized } from "../optionUtils";
-import type { Transform } from "../types";
-import { isEntryNode } from "../utils";
+import { checkForDuplicates } from "../duplicates.ts";
+import type { MergeStrategy, OptionsNormalized } from "../optionUtils.ts";
+import type { Transform } from "../types.ts";
+import { isEntryNode } from "../utils.ts";
 
 export function createMergeEntriesTransform(
 	duplicatesOpt: OptionsNormalized["duplicates"],

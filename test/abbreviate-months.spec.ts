@@ -1,5 +1,5 @@
 import { strictEqual } from "node:assert";
-import { bibtex, bibtexTidy, test } from "./utils";
+import { bibtex, bibtexTidy, test } from "./utils.ts";
 
 test("abbreviate months", async () => {
 	const inputs = [

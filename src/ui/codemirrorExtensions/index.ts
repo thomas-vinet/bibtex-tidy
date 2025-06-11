@@ -15,7 +15,7 @@ import {
 	syntaxHighlighting,
 } from "@codemirror/language";
 import { styleTags, tags as t } from "@lezer/highlight";
-import { parser } from "./__generated__/bibtex";
+import { parser } from "./__generated__/bibtex.ts";
 
 const language = LRLanguage.define({
 	parser: parser.configure({

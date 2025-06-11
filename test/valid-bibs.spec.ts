@@ -1,7 +1,7 @@
 import { strictEqual } from "node:assert";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
-import { bibtexTidy, test } from "./utils";
+import { bibtexTidy, test } from "./utils.ts";
 
 async function testBibsInDir(path: string): Promise<void> {
 	const validfiles = await readdir(path);

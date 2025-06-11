@@ -1,5 +1,5 @@
-import type { FieldNode } from "../parsers/bibtexParser";
-import type { Transform } from "../types";
+import type { FieldNode } from "../parsers/bibtexParser.ts";
+import type { Transform } from "../types.ts";
 
 export function createFieldCommasTransform(trailing: boolean): Transform {
 	return {

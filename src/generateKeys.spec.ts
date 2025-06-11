@@ -1,7 +1,7 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { generateKey } from "./generateKeys";
-import { parseEntryKeyTemplate } from "./parsers/entryKeyTemplateParser";
+import { generateKey } from "./generateKeys.ts";
+import { parseEntryKeyTemplate } from "./parsers/entryKeyTemplateParser.ts";
 
 function generateEntryValues(entry: Record<string, string>) {
 	return new Map(Object.entries(entry));

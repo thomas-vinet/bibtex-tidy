@@ -1,4 +1,4 @@
-import type { Transform } from "../types";
+import type { Transform } from "../types.ts";
 
 export function createLimitAuthorsTransform(maxAuthors: number): Transform {
 	return {

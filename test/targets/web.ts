@@ -1,8 +1,8 @@
 import { join } from "node:path";
 import type { EditorView } from "@codemirror/view";
 import puppeteer, { type ElementHandle, type Page } from "puppeteer";
-import type { Warning } from "../../src/index";
-import { type Options, normalizeOptions } from "../../src/optionUtils";
+import type { Warning } from "../../src/index.ts";
+import { type Options, normalizeOptions } from "../../src/optionUtils.ts";
 
 const WEB_ROOT = join(__dirname, "..", "..", "docs", "index.html");
 

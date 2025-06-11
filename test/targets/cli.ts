@@ -2,8 +2,8 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 
 import { join } from "node:path";
-import type { CLIOptions } from "../../src/optionUtils";
-import { optionsToCLIArgs } from "../../src/optionsToCLIArgs";
+import type { CLIOptions } from "../../src/optionUtils.ts";
+import { optionsToCLIArgs } from "../../src/optionsToCLIArgs.ts";
 
 export const TMP_DIR = join(__dirname, "..", "..", ".tmp");
 export const BIN_PATH =

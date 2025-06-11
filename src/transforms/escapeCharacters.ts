@@ -1,5 +1,5 @@
-import type { Transform } from "../types";
-import { specialCharacters } from "../unicode";
+import type { Transform } from "../types.ts";
+import { specialCharacters } from "../unicode.ts";
 
 /**
  * The following fields are listed in the BibLaTeX documentation as verbatim (may contain

@@ -1,5 +1,5 @@
-import type { ASTProxy } from "./ASTProxy";
-import type { DuplicateRule } from "./optionUtils";
+import type { ASTProxy } from "./ASTProxy.ts";
+import type { DuplicateRule } from "./optionUtils.ts";
 
 export type Transform = {
 	name: string;

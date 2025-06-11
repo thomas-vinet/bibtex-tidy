@@ -1,5 +1,5 @@
 import { strictEqual } from "node:assert";
-import { bibtex, bibtexTidy, test } from "./utils";
+import { bibtex, bibtexTidy, test } from "./utils.ts";
 
 test("duplicate key warnings", async () => {
 	const input = bibtex`

@@ -5,18 +5,24 @@ import { generateDtsBundle } from "dts-bundle-generator";
 import { type BuildOptions, build, context } from "esbuild";
 import sveltePlugin from "esbuild-svelte";
 import { sveltePreprocess } from "svelte-preprocess";
-import { author, homepage, version } from "./package.json";
-import { MODIFIERS, SPECIAL_MARKERS, functionWords } from "./src/generateKeys";
+import pkg from "./package.json" with { type: "json" };
+import {
+	MODIFIERS,
+	SPECIAL_MARKERS,
+	functionWords,
+} from "./src/generateKeys.ts";
 import {
 	DEFAULT_KEY_TEMPLATE,
 	optionDefinitions,
-} from "./src/optionDefinitions";
-import { wrapText } from "./src/utils";
+} from "./src/optionDefinitions.ts";
+import { wrapText } from "./src/utils.ts";
 
-const SRC_PATH = join(__dirname, "src");
+const { author, homepage, version } = pkg;
+
+const SRC_PATH = "src";
 const BUILD_PATH = join(SRC_PATH, "__generated__");
-const WEB_PATH = join(__dirname, "docs");
-const CLI_BIN = env.BIBTEX_TIDY_BIN ?? join(__dirname, "bin", "bibtex-tidy");
+const WEB_PATH = "docs";
+const CLI_BIN = env.BIBTEX_TIDY_BIN ?? join("bin", "bibtex-tidy");
 
 /**
  * Browser features
@@ -108,7 +114,7 @@ const jsLibBuildOptions: BuildOptions = {
 	bundle: true,
 	entryPoints: ["./src/index.ts"],
 	keepNames: true,
-	outfile: join(__dirname, "bibtex-tidy.js"),
+	outfile: "bibtex-tidy.js",
 	platform: "node",
 	write: true,
 };
@@ -222,9 +228,9 @@ async function generateManPage() {
 }
 
 async function generateReadme() {
-	const readme = await readFile(join(__dirname, "README.md"), "utf8");
+	const readme = await readFile("README.md", "utf8");
 	await writeFile(
-		join(__dirname, "README.md"),
+		"README.md",
 		readme.replace(
 			/```manpage.*?```/s,
 			`\`\`\`manpage\n${formatOptions(2, 84).join("\n")}\n\`\`\``,
@@ -233,10 +239,7 @@ async function generateReadme() {
 }
 
 async function generateKeyTemplatePage() {
-	let doc = await readFile(
-		join(__dirname, "docs/manual/key-generation.html"),
-		"utf8",
-	);
+	let doc = await readFile("docs/manual/key-generation.html", "utf8");
 	const markers = Object.entries(SPECIAL_MARKERS).map(
 		([k, { description }]) => `<li><code>[${k}]</code>: ${description}</li>`,
 	);
@@ -261,7 +264,7 @@ async function generateKeyTemplatePage() {
 			/<!--WORDS-->.*?<!--END-->/s,
 			`<!--WORDS-->${[...functionWords].join(", ")}<!--END-->`,
 		);
-	await writeFile(join(__dirname, "docs/manual/key-generation.html"), doc);
+	await writeFile("docs/manual/key-generation.html", doc);
 }
 
 function formatOptions(indent: number, lineWidth: number): string[] {

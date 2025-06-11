@@ -1,6 +1,6 @@
 import { deepStrictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { parseEntryKeyTemplate } from "./entryKeyTemplateParser";
+import { parseEntryKeyTemplate } from "./entryKeyTemplateParser.ts";
 
 describe("entryKeyTemplateParser", () => {
 	it("parses given template", () => {

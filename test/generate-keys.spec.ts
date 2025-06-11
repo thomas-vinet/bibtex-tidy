@@ -1,7 +1,7 @@
 import { strictEqual } from "node:assert";
-import { generateKey } from "../src/generateKeys";
-import { parseEntryKeyTemplate } from "../src/parsers/entryKeyTemplateParser";
-import { bibtex, bibtexTidy, test } from "./utils";
+import { generateKey } from "../src/generateKeys.ts";
+import { parseEntryKeyTemplate } from "../src/parsers/entryKeyTemplateParser.ts";
+import { bibtex, bibtexTidy, test } from "./utils.ts";
 
 const input = bibtex`
 @ARTICLE{article-minimal,

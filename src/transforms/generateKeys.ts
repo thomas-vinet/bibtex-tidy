@@ -1,5 +1,5 @@
-import { generateKeys } from "../generateKeys";
-import type { Transform } from "../types";
+import { generateKeys } from "../generateKeys.ts";
+import type { Transform } from "../types.ts";
 
 export function createGenerateKeysTransform(template: string): Transform {
 	return {

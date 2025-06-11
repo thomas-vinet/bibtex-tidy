@@ -1,10 +1,16 @@
 export class BlockNode {
 	type = "block" as const;
+	kind: "root" | "square" | "curly";
+	parent?: BlockNode | CommandNode;
+	children: (TextNode | CommandNode | BlockNode)[];
 	constructor(
-		public kind: "root" | "square" | "curly",
-		public parent?: BlockNode | CommandNode,
-		public children: (TextNode | CommandNode | BlockNode)[] = [],
+		kind: BlockNode["kind"],
+		parent?: BlockNode["parent"],
+		children: BlockNode["children"] = [],
 	) {
+		this.kind = kind;
+		this.parent = parent;
+		this.children = children;
 		if (parent instanceof BlockNode) {
 			parent.children.push(this);
 		} else if (parent instanceof CommandNode) {
@@ -17,10 +23,11 @@ export class BlockNode {
 }
 export class TextNode {
 	type = "text" as const;
-	constructor(
-		public parent: BlockNode,
-		public text = "",
-	) {
+	parent: BlockNode;
+	text: string;
+	constructor(parent: BlockNode, text = "") {
+		this.parent = parent;
+		this.text = text;
 		parent.children.push(this);
 	}
 	renderAsText(): string {
@@ -29,11 +36,13 @@ export class TextNode {
 }
 export class CommandNode {
 	type = "command" as const;
-	constructor(
-		public parent: BlockNode,
-		public command = "",
-		public args: BlockNode[] = [],
-	) {
+	parent: BlockNode;
+	command: string;
+	args: BlockNode[];
+	constructor(parent: BlockNode, command = "", args: BlockNode[] = []) {
+		this.parent = parent;
+		this.command = command;
+		this.args = args;
 		parent.children.push(this);
 	}
 	renderAsText(): string {

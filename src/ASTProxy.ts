@@ -1,18 +1,20 @@
-import { formatValue } from "./format";
-import { type OptionsNormalized, normalizeOptions } from "./optionUtils";
+import { formatValue } from "./format.ts";
 import type {
 	BlockNode,
 	EntryNode,
 	FieldNode,
 	RootNode,
-} from "./parsers/bibtexParser";
-import { parseLaTeX } from "./parsers/latexParser";
+} from "./parsers/bibtexParser.ts";
+import { parseLaTeX } from "./parsers/latexParser.ts";
 
 export class ASTProxy {
-	constructor(private ast: RootNode) {}
+	#ast: RootNode;
+	constructor(ast: RootNode) {
+		this.#ast = ast;
+	}
 
 	public root(): RootNode {
-		return this.ast;
+		return this.#ast;
 	}
 
 	public fields(): FieldNode[] {
@@ -20,7 +22,7 @@ export class ASTProxy {
 	}
 
 	public entries(): EntryNode[] {
-		return this.ast.children
+		return this.#ast.children
 			.filter((node): node is BlockNode => node.type === "block")
 			.map((block) => block.block)
 			.filter((entry): entry is EntryNode => entry?.type === "entry");

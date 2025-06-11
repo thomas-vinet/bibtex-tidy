@@ -1,11 +1,11 @@
 import assert from "node:assert";
 import { promises as fsp } from "node:fs"; // fs/promises not supported in node v12
 import { argv, exit, versions } from "node:process";
-import { manPage } from "../__generated__/manPage";
-import type { BibTeXTidyOptions } from "../__generated__/optionsType";
-import { version } from "../__generated__/version";
-import { type BibTeXTidyResult, tidy } from "../index";
-import { argsToOptions } from "./argsToOptions";
+import { manPage } from "../__generated__/manPage.ts";
+import type { BibTeXTidyOptions } from "../__generated__/optionsType.ts";
+import { version } from "../__generated__/version.ts";
+import { type BibTeXTidyResult, tidy } from "../index.ts";
+import { argsToOptions } from "./argsToOptions.ts";
 
 const { readFile, writeFile, copyFile } = fsp;
 

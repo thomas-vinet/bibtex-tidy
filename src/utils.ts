@@ -1,4 +1,4 @@
-import type { BlockNode, EntryNode, TextNode } from "./parsers/bibtexParser";
+import type { BlockNode, EntryNode, TextNode } from "./parsers/bibtexParser.ts";
 
 /**
  * Remove all non-alphanumeric characters

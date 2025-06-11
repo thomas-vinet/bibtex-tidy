@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { BibTeXTidyResult } from "..";
-import type { OptionsNormalized } from "../optionUtils";
+import type { BibTeXTidyResult } from "../index.ts";
+import type { OptionsNormalized } from "../optionUtils.ts";
 
 export let options: OptionsNormalized;
 export let result: BibTeXTidyResult;

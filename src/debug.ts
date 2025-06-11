@@ -1,4 +1,4 @@
-import type { Node } from "./parsers/bibtexParser";
+import type { Node } from "./parsers/bibtexParser.ts";
 
 export function logAST(node: Node, depth = 0) {
 	const indent = "  ".repeat(depth);

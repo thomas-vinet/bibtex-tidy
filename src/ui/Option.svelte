@@ -1,7 +1,10 @@
 <script lang="ts">
 import { createEventDispatcher } from "svelte";
-import { type OptionDefinition, optionDefinitions } from "../optionDefinitions";
-import type { Options, OptionsNormalized } from "../optionUtils";
+import {
+	type OptionDefinition,
+	optionDefinitions,
+} from "../optionDefinitions.ts";
+import type { Options, OptionsNormalized } from "../optionUtils.ts";
 import Checkbox from "./Checkbox.svelte";
 import Label from "./Label.svelte";
 import SubOptions from "./SubOptions.svelte";

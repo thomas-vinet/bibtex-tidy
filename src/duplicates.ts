@@ -1,9 +1,9 @@
-import type { ASTProxy } from "./ASTProxy";
-import type { DuplicateRule, MergeStrategy } from "./optionUtils";
-import type { EntryNode } from "./parsers/bibtexParser";
-import { parseNameList } from "./parsers/nameFieldParser";
-import type { Warning } from "./types";
-import { alphaNum } from "./utils";
+import type { ASTProxy } from "./ASTProxy.ts";
+import type { DuplicateRule, MergeStrategy } from "./optionUtils.ts";
+import type { EntryNode } from "./parsers/bibtexParser.ts";
+import { parseNameList } from "./parsers/nameFieldParser.ts";
+import type { Warning } from "./types.ts";
+import { alphaNum } from "./utils.ts";
 
 export function checkForDuplicates(
 	cache: ASTProxy,

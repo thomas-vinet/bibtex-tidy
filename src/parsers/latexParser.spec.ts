@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { flattenLaTeX, parseLaTeX, stringifyLaTeX } from "./latexParser";
+import { flattenLaTeX, parseLaTeX, stringifyLaTeX } from "./latexParser.ts";
 
 const testStrings = [
 	{

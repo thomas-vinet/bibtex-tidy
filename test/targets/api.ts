@@ -1,5 +1,5 @@
-import { type BibTeXTidyResult, tidy as tidyImport } from "../../src/index";
-import type { Options } from "../../src/optionUtils";
+import { type BibTeXTidyResult, tidy as tidyImport } from "../../src/index.ts";
+import type { Options } from "../../src/optionUtils.ts";
 
 // require the actual build. Using import would cause it to bundled into the
 // test and we won't be testing the actual build.

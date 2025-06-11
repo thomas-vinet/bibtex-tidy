@@ -2,8 +2,8 @@ import {
 	flattenLaTeX,
 	parseLaTeX,
 	stringifyLaTeX,
-} from "../parsers/latexParser";
-import type { Transform } from "../types";
+} from "../parsers/latexParser.ts";
+import type { Transform } from "../types.ts";
 
 export function createRemoveBracesTransform(fields: string[]): Transform {
 	const set = new Set(fields.map((f) => f.toLocaleLowerCase()));

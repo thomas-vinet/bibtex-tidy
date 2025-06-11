@@ -1,6 +1,6 @@
-import type { FieldNode } from "../parsers/bibtexParser";
-import type { Transform } from "../types";
-import { unwrapText, wrapText } from "../utils";
+import type { FieldNode } from "../parsers/bibtexParser.ts";
+import type { Transform } from "../types.ts";
+import { unwrapText, wrapText } from "../utils.ts";
 
 export function createWrapValuesTransform(
 	indent: string,

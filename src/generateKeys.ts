@@ -1,10 +1,10 @@
-import type { ASTProxy } from "./ASTProxy";
-import type { EntryNode } from "./parsers/bibtexParser";
+import type { ASTProxy } from "./ASTProxy.ts";
+import type { EntryNode } from "./parsers/bibtexParser.ts";
 import {
 	type EntryKeyTemplateToken,
 	parseEntryKeyTemplate,
-} from "./parsers/entryKeyTemplateParser";
-import { parseNameList } from "./parsers/nameFieldParser";
+} from "./parsers/entryKeyTemplateParser.ts";
+import { parseNameList } from "./parsers/nameFieldParser.ts";
 
 export const SPECIAL_MARKERS: Record<
 	string,

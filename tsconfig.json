@@ -5,9 +5,13 @@
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
 		"strict": true,
+		"erasableSyntaxOnly": true,
 		"resolveJsonModule": true,
 		"noUncheckedIndexedAccess": true,
 		"downlevelIteration": true,
+		"verbatimModuleSyntax": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
 		"lib": ["ESNext", "DOM", "DOM.Iterable"],
 		"target": "ES2018"
 	},

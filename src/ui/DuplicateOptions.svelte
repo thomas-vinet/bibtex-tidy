@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { MergeStrategy, OptionsNormalized } from "../optionUtils";
+import type { MergeStrategy, OptionsNormalized } from "../optionUtils.ts";
 import Checkbox from "./Checkbox.svelte";
 import Collapsible from "./Collapsible.svelte";
 import Label from "./Label.svelte";

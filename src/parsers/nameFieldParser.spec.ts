@@ -1,6 +1,6 @@
 import { deepStrictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { parseName, parseNameList } from "./nameFieldParser";
+import { parseName, parseNameList } from "./nameFieldParser.ts";
 
 describe("parseName", () => {
 	it('should parse authors of form "LastName"', () => {

@@ -1,6 +1,6 @@
-import type { ASTProxy } from "../ASTProxy";
-import type { FieldNode } from "../parsers/bibtexParser";
-import type { Transform } from "../types";
+import type { ASTProxy } from "../ASTProxy.ts";
+import type { FieldNode } from "../parsers/bibtexParser.ts";
+import type { Transform } from "../types.ts";
 
 export function createDropAllCapsTransform(): Transform {
 	return {

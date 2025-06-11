@@ -1,7 +1,7 @@
 import { deepStrictEqual } from "node:assert";
 
 import { describe, it } from "node:test";
-import { parseCLIArguments, parseLongCLIOption } from "./argsParser";
+import { parseCLIArguments, parseLongCLIOption } from "./argsParser.ts";
 
 describe("parseCLIArguments", () => {
 	it("parses 0 arguments", () => {

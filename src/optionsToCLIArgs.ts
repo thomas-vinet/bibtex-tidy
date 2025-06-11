@@ -1,5 +1,5 @@
-import { optionDefinitions } from "./optionDefinitions";
-import type { Options } from "./optionUtils";
+import { optionDefinitions } from "./optionDefinitions.ts";
+import type { Options } from "./optionUtils.ts";
 
 export function optionsToCLIArgs(options: Options): string[] {
 	return optionDefinitions

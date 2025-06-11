@@ -1,6 +1,6 @@
 import { deepStrictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { argsToOptions } from "./argsToOptions";
+import { argsToOptions } from "./argsToOptions.ts";
 
 describe("argsToOptions", () => {
 	it("parses CLI arguments to bibtex options", () => {

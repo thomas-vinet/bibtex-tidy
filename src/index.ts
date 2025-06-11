@@ -1,2 +1,2 @@
-export { tidy } from "./tidy";
-export type { Warning, BibTeXTidyResult } from "./types";
+export { tidy } from "./tidy.ts";
+export type { Warning, BibTeXTidyResult } from "./types.ts";

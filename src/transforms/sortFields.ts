@@ -1,6 +1,6 @@
-import type { EntryNode } from "../parsers/bibtexParser";
+import type { EntryNode } from "../parsers/bibtexParser.ts";
 
-import type { Transform } from "../types";
+import type { Transform } from "../types.ts";
 
 export function createSortFieldsTransform(sortFields: string[]): Transform {
 	return {

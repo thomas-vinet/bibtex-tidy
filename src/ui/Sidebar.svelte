@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createEventDispatcher } from "svelte";
-import type { BibTeXTidyResult } from "..";
-import type { OptionsNormalized } from "../optionUtils";
+import type { BibTeXTidyResult } from "../index.ts";
+import type { OptionsNormalized } from "../optionUtils.ts";
 import CleanupOptions from "./CleanupOptions.svelte";
 import Cli from "./Cli.svelte";
 import DuplicateOptions from "./DuplicateOptions.svelte";

@@ -1,8 +1,8 @@
 import { equal } from "node:assert";
 import { describe, it } from "node:test";
-import { ASTProxy } from "./ASTProxy";
-import { checkForDuplicates } from "./duplicates";
-import { parseBibTeX } from "./parsers/bibtexParser";
+import { ASTProxy } from "./ASTProxy.ts";
+import { checkForDuplicates } from "./duplicates.ts";
+import { parseBibTeX } from "./parsers/bibtexParser.ts";
 
 describe("checkForDuplicates", () => {
 	it("should flag similar citations", () => {

@@ -1,4 +1,4 @@
-import type { Options } from "./optionUtils";
+import type { Options } from "./optionUtils.ts";
 
 type Value = number | string | string[] | boolean | undefined;
 

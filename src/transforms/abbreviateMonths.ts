@@ -1,6 +1,6 @@
-import type { ASTProxy } from "../ASTProxy";
-import { type FieldNode, LiteralNode } from "../parsers/bibtexParser";
-import type { Transform } from "../types";
+import type { ASTProxy } from "../ASTProxy.ts";
+import { type FieldNode, LiteralNode } from "../parsers/bibtexParser.ts";
+import type { Transform } from "../types.ts";
 
 /**
  * It’s generally recommended to store months in BibTeX files using the macros jan, feb,

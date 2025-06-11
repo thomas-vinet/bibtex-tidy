@@ -1,5 +1,5 @@
 import { deepStrictEqual } from "node:assert";
-import { bibtex, bibtexTidy, test } from "./utils";
+import { bibtex, bibtexTidy, test } from "./utils.ts";
 
 const input = bibtex`
 @book{test,

@@ -1,59 +1,74 @@
 export class RootNode {
 	type = "root" as const;
-	constructor(public children: (TextNode | BlockNode)[] = []) {}
+	children: (TextNode | BlockNode)[];
+	constructor(children: (TextNode | BlockNode)[] = []) {
+		this.children = children;
+	}
 }
 
 export class TextNode {
 	type = "text" as const;
-	constructor(
-		public parent: RootNode,
-		public text: string,
-		public whitespacePrefix: string,
-	) {
+	parent: RootNode;
+	text: string;
+	whitespacePrefix: string;
+	constructor(parent: RootNode, text: string, whitespacePrefix: string) {
+		this.parent = parent;
+		this.text = text;
+		this.whitespacePrefix = whitespacePrefix;
 		parent.children.push(this);
 	}
 }
 export class BlockNode {
 	type = "block" as const;
-	public command = "";
-	public block?: CommentNode | PreambleNode | StringNode | EntryNode;
-	constructor(
-		public parent: RootNode,
-		public whitespacePrefix: string,
-	) {
+	command = "";
+	block?: CommentNode | PreambleNode | StringNode | EntryNode;
+	parent: RootNode;
+	whitespacePrefix: string;
+	constructor(parent: RootNode, whitespacePrefix: string) {
+		this.parent = parent;
+		this.whitespacePrefix = whitespacePrefix;
 		parent.children.push(this);
 	}
 }
 export class CommentNode {
 	type = "comment" as const;
-	constructor(
-		public parent: BlockNode,
-		public raw: string,
-		public braces: number,
-		public parens: number,
-	) {
+	parent: BlockNode;
+	raw: string;
+	braces: number;
+	parens: number;
+	constructor(parent: BlockNode, raw: string, braces: number, parens: number) {
+		this.parent = parent;
+		this.raw = raw;
+		this.braces = braces;
+		this.parens = parens;
 		parent.block = this;
 	}
 }
 class PreambleNode {
 	type = "preamble" as const;
-	constructor(
-		public parent: BlockNode,
-		public raw: string,
-		public braces: number,
-		public parens: number,
-	) {
+	parent: BlockNode;
+	raw: string;
+	braces: number;
+	parens: number;
+	constructor(parent: BlockNode, raw: string, braces: number, parens: number) {
+		this.parent = parent;
+		this.raw = raw;
+		this.braces = braces;
+		this.parens = parens;
 		parent.block = this;
 	}
 }
 class StringNode {
 	type = "string" as const;
-	constructor(
-		public parent: BlockNode,
-		public raw: string,
-		public braces: number,
-		public parens: number,
-	) {
+	parent: BlockNode;
+	raw: string;
+	braces: number;
+	parens: number;
+	constructor(parent: BlockNode, raw: string, braces: number, parens: number) {
+		this.parent = parent;
+		this.raw = raw;
+		this.braces = braces;
+		this.parens = parens;
 		parent.block = this;
 	}
 }
@@ -62,10 +77,11 @@ export class EntryNode {
 	key?: string;
 	keyEnded?: boolean;
 	fields: FieldNode[];
-	constructor(
-		public parent: BlockNode,
-		public wrapType: "{" | "(",
-	) {
+	parent: BlockNode;
+	wrapType: "{" | "(";
+	constructor(parent: BlockNode, wrapType: "{" | "(") {
+		this.parent = parent;
+		this.wrapType = wrapType;
 		parent.block = this;
 		this.fields = [];
 	}
@@ -74,12 +90,14 @@ export class FieldNode {
 	type = "field" as const;
 	/** Each value is concatenated */
 	value: ConcatNode;
-	public hasComma = false; // not filled in during parsing
-	constructor(
-		public parent: EntryNode,
-		public name = "",
-		public whitespacePrefix = "",
-	) {
+	hasComma = false; // not filled in during parsing
+	parent: EntryNode;
+	name: string;
+	whitespacePrefix: string;
+	constructor(parent: EntryNode, name = "", whitespacePrefix = "") {
+		this.parent = parent;
+		this.name = name;
+		this.whitespacePrefix = whitespacePrefix;
 		this.value = new ConcatNode(this);
 	}
 }
@@ -87,17 +105,21 @@ export class ConcatNode {
 	type = "concat" as const;
 	concat: (LiteralNode | BracedNode | QuotedNode)[];
 	canConsumeValue = true;
-	public whitespacePrefix = ""; // not filled in during parsing
-	constructor(public parent: FieldNode) {
+	whitespacePrefix = ""; // not filled in during parsing
+	parent: FieldNode;
+	constructor(parent: FieldNode) {
+		this.parent = parent;
 		this.concat = [];
 	}
 }
 export class LiteralNode {
 	type = "literal" as const;
-	constructor(
-		public parent: ConcatNode,
-		public value: string,
-	) {}
+	parent: ConcatNode;
+	value: string;
+	constructor(parent: ConcatNode, value: string) {
+		this.parent = parent;
+		this.value = value;
+	}
 }
 
 function createLiteralNode(parent: ConcatNode, value: string): LiteralNode {
@@ -111,7 +133,10 @@ export class BracedNode {
 	value = "";
 	/** Used to count opening and closing braces */
 	depth = 0;
-	constructor(public parent: ConcatNode) {}
+	parent: ConcatNode;
+	constructor(parent: ConcatNode) {
+		this.parent = parent;
+	}
 }
 
 function createBracedNode(parent: ConcatNode): BracedNode {
@@ -125,7 +150,10 @@ export class QuotedNode {
 	value = "";
 	/** Used to count opening and closing braces */
 	depth = 0;
-	constructor(public parent: ConcatNode) {}
+	parent: ConcatNode;
+	constructor(parent: ConcatNode) {
+		this.parent = parent;
+	}
 }
 
 function createQuotedNode(parent: ConcatNode): QuotedNode {
@@ -449,19 +477,27 @@ function isValidFieldName(char: string): boolean {
 }
 
 export class BibTeXSyntaxError extends Error {
-	public char: string;
+	char: string;
+	pos: number;
+	line: number;
+	column: number;
+	hint?: string;
 	constructor(
 		input: string,
-		public node: Node,
+		node: Node,
 		pos: number,
-		public line: number,
-		public column: number,
-		public hint?: string,
+		line: number,
+		column: number,
+		hint?: string,
 	) {
 		super(
 			`Line ${line}:${column}: Syntax Error in ${node.type} (${hint})\n${input.slice(Math.max(0, pos - 20), pos)}>>${input[pos]}<<${input.slice(pos + 1, pos + 20)}`,
 		);
 		this.name = "Syntax Error";
 		this.char = input[pos] ?? "";
+		this.pos = pos;
+		this.line = line;
+		this.column = column;
+		this.hint = hint;
 	}
 }

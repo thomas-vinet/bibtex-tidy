@@ -1,5 +1,5 @@
-import { parseLaTeX, stringifyLaTeX } from "../parsers/latexParser";
-import type { Transform } from "../types";
+import { parseLaTeX, stringifyLaTeX } from "../parsers/latexParser.ts";
+import type { Transform } from "../types.ts";
 
 // if the user requested, wrap the value in braces (this forces bibtex
 // compiler to preserve case)

@@ -6,10 +6,10 @@ import assert, {
 import { randomBytes } from "node:crypto";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { CLIOptions } from "../src/optionUtils";
-import { type APIResult, testAPI } from "./targets/api";
-import { type CLIResult, TMP_DIR, testCLI } from "./targets/cli";
-import { type WebResult, teardown, testWeb } from "./targets/web";
+import type { CLIOptions } from "../src/optionUtils.ts";
+import { type APIResult, testAPI } from "./targets/api.ts";
+import { type CLIResult, TMP_DIR, testCLI } from "./targets/cli.ts";
+import { type WebResult, teardown, testWeb } from "./targets/web.ts";
 
 const queue: (() => Promise<void>)[] = [];
 

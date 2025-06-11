@@ -1,5 +1,5 @@
-import type { Transform } from "../types";
-import { monthAliases } from "./abbreviateMonths";
+import type { Transform } from "../types.ts";
+import { monthAliases } from "./abbreviateMonths.ts";
 
 export function createPreferCurlyTransform(): Transform {
 	return {

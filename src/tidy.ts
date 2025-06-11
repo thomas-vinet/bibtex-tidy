@@ -1,12 +1,12 @@
-import { ASTProxy } from "./ASTProxy";
-import { logAST } from "./debug";
-import { formatBibtex } from "./format";
-import { normalizeOptions } from "./optionUtils";
-import type { Options } from "./optionUtils";
-import { parseBibTeX } from "./parsers/bibtexParser";
-import { generateTransformPipeline } from "./pipeline";
-import type { BibTeXTidyResult, Warning } from "./types";
-import { convertCRLF } from "./utils";
+import { ASTProxy } from "./ASTProxy.ts";
+import { logAST } from "./debug.ts";
+import { formatBibtex } from "./format.ts";
+import { normalizeOptions } from "./optionUtils.ts";
+import type { Options } from "./optionUtils.ts";
+import { parseBibTeX } from "./parsers/bibtexParser.ts";
+import { generateTransformPipeline } from "./pipeline.ts";
+import type { BibTeXTidyResult, Warning } from "./types.ts";
+import { convertCRLF } from "./utils.ts";
 
 const verbose = false;
 

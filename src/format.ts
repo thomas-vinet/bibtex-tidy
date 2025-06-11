@@ -4,8 +4,8 @@ import type {
 	FieldNode,
 	RootNode,
 	TextNode,
-} from "./parsers/bibtexParser";
-import { doubleEnclose } from "./transforms/encloseBraces";
+} from "./parsers/bibtexParser.ts";
+import { doubleEnclose } from "./transforms/encloseBraces.ts";
 
 export function formatBibtex(ast: RootNode): string {
 	const bibtex: string = ast.children

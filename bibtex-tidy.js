@@ -36,10 +36,10 @@ module.exports = __toCommonJS(index_exports);
 // src/parsers/latexParser.ts
 var BlockNode = class _BlockNode {
   constructor(kind, parent, children = []) {
+    this.type = "block";
     this.kind = kind;
     this.parent = parent;
     this.children = children;
-    this.type = "block";
     if (parent instanceof _BlockNode) {
       parent.children.push(this);
     } else if (parent instanceof CommandNode) {
@@ -55,9 +55,9 @@ var BlockNode = class _BlockNode {
 };
 var TextNode = class {
   constructor(parent, text = "") {
+    this.type = "text";
     this.parent = parent;
     this.text = text;
-    this.type = "text";
     parent.children.push(this);
   }
   static {
@@ -69,10 +69,10 @@ var TextNode = class {
 };
 var CommandNode = class {
   constructor(parent, command = "", args = []) {
+    this.type = "command";
     this.parent = parent;
     this.command = command;
     this.args = args;
-    this.type = "command";
     parent.children.push(this);
   }
   static {
@@ -252,6 +252,107 @@ function formatValue(field) {
   }).join(" # ");
 }
 __name(formatValue, "formatValue");
+
+// src/ASTProxy.ts
+var ASTProxy = class {
+  constructor(ast) {
+    this.fieldLookup = /* @__PURE__ */ new Map();
+    this.renderValueLookup = /* @__PURE__ */ new Map();
+    this.#ast = ast;
+  }
+  static {
+    __name(this, "ASTProxy");
+  }
+  #ast;
+  root() {
+    return this.#ast;
+  }
+  fields() {
+    return this.entries().flatMap((entry) => entry.fields);
+  }
+  entries() {
+    return this.#ast.children.filter((node) => node.type === "block").map((block) => block.block).filter((entry) => entry?.type === "entry");
+  }
+  invalidateField(field) {
+    this.renderValueLookup.delete(field);
+  }
+  lookupField(entry, fieldLc) {
+    let fieldNode = this.fieldLookup.get(entry)?.get(fieldLc);
+    if (fieldNode === void 0) {
+      fieldNode = entry.fields.find(
+        (field) => field.name.toLocaleLowerCase() === fieldLc
+      );
+    }
+    return fieldNode;
+  }
+  lookupRenderedEntryValue(node, fieldName) {
+    const field = node.type === "entry" ? this.lookupField(node, (fieldName ?? "").toLocaleLowerCase()) : node;
+    if (!field) {
+      return "";
+    }
+    let value = this.renderValueLookup.get(field);
+    if (value === void 0) {
+      const entryValue = formatValue(field) ?? "";
+      value = parseLaTeX(entryValue).renderAsText();
+      this.renderValueLookup.set(field, value);
+    }
+    return value;
+  }
+  lookupRenderedEntryValues(entry) {
+    const values = /* @__PURE__ */ new Map();
+    for (const field of entry.fields) {
+      values.set(field.name, this.lookupRenderedEntryValue(field));
+    }
+    return values;
+  }
+};
+
+// src/debug.ts
+function logAST(node, depth = 0) {
+  const indent = "  ".repeat(depth);
+  let log = `
+${indent}${node.type} ws="${"whitespacePrefix" in node ? node.whitespacePrefix.replace(/\n/g, "\\n") : ""}"`;
+  switch (node.type) {
+    case "root":
+      for (const child of node.children) {
+        log += logAST(child, depth + 1);
+      }
+      break;
+    case "block":
+      log += ` command="${node.command}"`;
+      if (node.block) {
+        log += logAST(node.block, depth + 1);
+      }
+      break;
+    case "concat":
+      for (const value of node.concat) {
+        log += logAST(value, depth + 1);
+      }
+      break;
+    case "entry":
+      log += ` key="${node.key}"`;
+      for (const field of node.fields) {
+        log += logAST(field, depth + 1);
+      }
+      break;
+    case "field":
+      log += ` name="${node.name}"`;
+      log += logAST(node.value, depth + 1);
+      break;
+    case "text":
+      log += ` text="${node.text.replace(/\n/g, "\\n")}"`;
+      break;
+    case "braced":
+    case "quoted":
+    case "comment":
+    case "preamble":
+    case "string":
+    case "literal":
+      break;
+  }
+  return log;
+}
+__name(logAST, "logAST");
 
 // src/optionDefinitions.ts
 var DEFAULT_MERGE_CHECK = ["doi", "citation", "abstract"];
@@ -800,111 +901,11 @@ function normalizeOptions(options) {
 }
 __name(normalizeOptions, "normalizeOptions");
 
-// src/ASTProxy.ts
-var ASTProxy = class {
-  constructor(ast) {
-    this.ast = ast;
-    this.fieldLookup = /* @__PURE__ */ new Map();
-    this.renderValueLookup = /* @__PURE__ */ new Map();
-  }
-  static {
-    __name(this, "ASTProxy");
-  }
-  root() {
-    return this.ast;
-  }
-  fields() {
-    return this.entries().flatMap((entry) => entry.fields);
-  }
-  entries() {
-    return this.ast.children.filter((node) => node.type === "block").map((block) => block.block).filter((entry) => entry?.type === "entry");
-  }
-  invalidateField(field) {
-    this.renderValueLookup.delete(field);
-  }
-  lookupField(entry, fieldLc) {
-    let fieldNode = this.fieldLookup.get(entry)?.get(fieldLc);
-    if (fieldNode === void 0) {
-      fieldNode = entry.fields.find(
-        (field) => field.name.toLocaleLowerCase() === fieldLc
-      );
-    }
-    return fieldNode;
-  }
-  lookupRenderedEntryValue(node, fieldName) {
-    const field = node.type === "entry" ? this.lookupField(node, (fieldName ?? "").toLocaleLowerCase()) : node;
-    if (!field) {
-      return "";
-    }
-    let value = this.renderValueLookup.get(field);
-    if (value === void 0) {
-      const entryValue = formatValue(field) ?? "";
-      value = parseLaTeX(entryValue).renderAsText();
-      this.renderValueLookup.set(field, value);
-    }
-    return value;
-  }
-  lookupRenderedEntryValues(entry) {
-    const values = /* @__PURE__ */ new Map();
-    for (const field of entry.fields) {
-      values.set(field.name, this.lookupRenderedEntryValue(field));
-    }
-    return values;
-  }
-};
-
-// src/debug.ts
-function logAST(node, depth = 0) {
-  const indent = "  ".repeat(depth);
-  let log = `
-${indent}${node.type} ws="${"whitespacePrefix" in node ? node.whitespacePrefix.replace(/\n/g, "\\n") : ""}"`;
-  switch (node.type) {
-    case "root":
-      for (const child of node.children) {
-        log += logAST(child, depth + 1);
-      }
-      break;
-    case "block":
-      log += ` command="${node.command}"`;
-      if (node.block) {
-        log += logAST(node.block, depth + 1);
-      }
-      break;
-    case "concat":
-      for (const value of node.concat) {
-        log += logAST(value, depth + 1);
-      }
-      break;
-    case "entry":
-      log += ` key="${node.key}"`;
-      for (const field of node.fields) {
-        log += logAST(field, depth + 1);
-      }
-      break;
-    case "field":
-      log += ` name="${node.name}"`;
-      log += logAST(node.value, depth + 1);
-      break;
-    case "text":
-      log += ` text="${node.text.replace(/\n/g, "\\n")}"`;
-      break;
-    case "braced":
-    case "quoted":
-    case "comment":
-    case "preamble":
-    case "string":
-    case "literal":
-      break;
-  }
-  return log;
-}
-__name(logAST, "logAST");
-
 // src/parsers/bibtexParser.ts
 var RootNode = class {
   constructor(children = []) {
-    this.children = children;
     this.type = "root";
+    this.children = children;
   }
   static {
     __name(this, "RootNode");
@@ -912,10 +913,10 @@ var RootNode = class {
 };
 var TextNode2 = class {
   constructor(parent, text, whitespacePrefix) {
+    this.type = "text";
     this.parent = parent;
     this.text = text;
     this.whitespacePrefix = whitespacePrefix;
-    this.type = "text";
     parent.children.push(this);
   }
   static {
@@ -924,10 +925,10 @@ var TextNode2 = class {
 };
 var BlockNode2 = class {
   constructor(parent, whitespacePrefix) {
-    this.parent = parent;
-    this.whitespacePrefix = whitespacePrefix;
     this.type = "block";
     this.command = "";
+    this.parent = parent;
+    this.whitespacePrefix = whitespacePrefix;
     parent.children.push(this);
   }
   static {
@@ -936,11 +937,11 @@ var BlockNode2 = class {
 };
 var CommentNode = class {
   constructor(parent, raw, braces, parens) {
+    this.type = "comment";
     this.parent = parent;
     this.raw = raw;
     this.braces = braces;
     this.parens = parens;
-    this.type = "comment";
     parent.block = this;
   }
   static {
@@ -949,11 +950,11 @@ var CommentNode = class {
 };
 var PreambleNode = class {
   constructor(parent, raw, braces, parens) {
+    this.type = "preamble";
     this.parent = parent;
     this.raw = raw;
     this.braces = braces;
     this.parens = parens;
-    this.type = "preamble";
     parent.block = this;
   }
   static {
@@ -962,11 +963,11 @@ var PreambleNode = class {
 };
 var StringNode = class {
   constructor(parent, raw, braces, parens) {
+    this.type = "string";
     this.parent = parent;
     this.raw = raw;
     this.braces = braces;
     this.parens = parens;
-    this.type = "string";
     parent.block = this;
   }
   static {
@@ -975,9 +976,9 @@ var StringNode = class {
 };
 var EntryNode = class {
   constructor(parent, wrapType) {
+    this.type = "entry";
     this.parent = parent;
     this.wrapType = wrapType;
-    this.type = "entry";
     parent.block = this;
     this.fields = [];
   }
@@ -986,13 +987,12 @@ var EntryNode = class {
   }
 };
 var FieldNode = class {
-  // not filled in during parsing
   constructor(parent, name = "", whitespacePrefix = "") {
+    this.type = "field";
+    this.hasComma = false;
     this.parent = parent;
     this.name = name;
     this.whitespacePrefix = whitespacePrefix;
-    this.type = "field";
-    this.hasComma = false;
     this.value = new ConcatNode(this);
   }
   static {
@@ -1000,12 +1000,11 @@ var FieldNode = class {
   }
 };
 var ConcatNode = class {
-  // not filled in during parsing
   constructor(parent) {
-    this.parent = parent;
     this.type = "concat";
     this.canConsumeValue = true;
     this.whitespacePrefix = "";
+    this.parent = parent;
     this.concat = [];
   }
   static {
@@ -1014,9 +1013,9 @@ var ConcatNode = class {
 };
 var LiteralNode = class {
   constructor(parent, value) {
+    this.type = "literal";
     this.parent = parent;
     this.value = value;
-    this.type = "literal";
   }
   static {
     __name(this, "LiteralNode");
@@ -1030,11 +1029,11 @@ function createLiteralNode(parent, value) {
 __name(createLiteralNode, "createLiteralNode");
 var BracedNode = class {
   constructor(parent) {
-    this.parent = parent;
     this.type = "braced";
     this.value = "";
     /** Used to count opening and closing braces */
     this.depth = 0;
+    this.parent = parent;
   }
   static {
     __name(this, "BracedNode");
@@ -1048,11 +1047,11 @@ function createBracedNode(parent) {
 __name(createBracedNode, "createBracedNode");
 var QuotedNode = class {
   constructor(parent) {
-    this.parent = parent;
     this.type = "quoted";
     this.value = "";
     /** Used to count opening and closing braces */
     this.depth = 0;
+    this.parent = parent;
   }
   static {
     __name(this, "QuotedNode");
@@ -1332,20 +1331,20 @@ function isValidFieldName(char) {
 }
 __name(isValidFieldName, "isValidFieldName");
 var BibTeXSyntaxError = class extends Error {
+  static {
+    __name(this, "BibTeXSyntaxError");
+  }
   constructor(input, node, pos, line, column, hint) {
     super(
       `Line ${line}:${column}: Syntax Error in ${node.type} (${hint})
 ${input.slice(Math.max(0, pos - 20), pos)}>>${input[pos]}<<${input.slice(pos + 1, pos + 20)}`
     );
-    this.node = node;
+    this.name = "Syntax Error";
+    this.char = input[pos] ?? "";
+    this.pos = pos;
     this.line = line;
     this.column = column;
     this.hint = hint;
-    this.name = "Syntax Error";
-    this.char = input[pos] ?? "";
-  }
-  static {
-    __name(this, "BibTeXSyntaxError");
   }
 };
 

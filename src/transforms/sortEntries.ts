@@ -1,6 +1,6 @@
-import type { ASTProxy } from "../ASTProxy";
-import type { BlockNode, RootNode, TextNode } from "../parsers/bibtexParser";
-import type { Transform } from "../types";
+import type { ASTProxy } from "../ASTProxy.ts";
+import type { BlockNode, RootNode, TextNode } from "../parsers/bibtexParser.ts";
+import type { Transform } from "../types.ts";
 
 const MONTH_MACROS = [
 	"jan",

@@ -13,12 +13,12 @@ import {
 	lineNumbers,
 } from "@codemirror/view";
 import { onMount } from "svelte";
-import type { BibTeXSyntaxError } from "../bibtexParser";
+import type { BibTeXSyntaxError } from "../parsers/bibtexParser.ts";
 import CopyButton from "./CopyButton.svelte";
 import {
 	bibtexLanguage,
 	bibtexSyntaxHighlighting,
-} from "./codemirrorExtensions";
+} from "./codemirrorExtensions/index.ts";
 
 export let bibtex: string;
 export let error: BibTeXSyntaxError | undefined;

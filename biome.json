@@ -13,6 +13,13 @@
 			"src/ui/codemirrorExtensions/bibtex.terms.ts"
 		]
 	},
+	"linter": {
+		"rules": {
+			"correctness": {
+				"useImportExtensions": "error"
+			}
+		}
+	},
 	"overrides": [
 		{
 			"include": ["*.svelte"],

@@ -1,4 +1,4 @@
-import type { Transform } from "../types";
+import type { Transform } from "../types.ts";
 
 /** Replace single dash with double dash in page range **/
 export function createFormatPageRangeTransform(): Transform {

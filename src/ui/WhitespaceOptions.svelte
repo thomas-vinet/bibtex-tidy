@@ -1,6 +1,6 @@
 <script lang="ts">
-import { DEFAULT_WRAP } from "../optionDefinitions";
-import type { OptionsNormalized } from "../optionUtils";
+import { DEFAULT_WRAP } from "../optionDefinitions.ts";
+import type { OptionsNormalized } from "../optionUtils.ts";
 import Collapsible from "./Collapsible.svelte";
 import Option from "./Option.svelte";
 

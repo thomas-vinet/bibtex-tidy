@@ -1,7 +1,7 @@
 import { match, strictEqual } from "node:assert";
 import { spawnSync } from "node:child_process";
-import { BIN_PATH } from "./targets/cli";
-import { bibtex, test, tmpfile } from "./utils";
+import { BIN_PATH } from "./targets/cli.ts";
+import { bibtex, test, tmpfile } from "./utils.ts";
 
 const input = bibtex`
 @article{a,

@@ -1,4 +1,4 @@
-import type { Transform } from "../types";
+import type { Transform } from "../types.ts";
 
 export function createLowercaseFieldsTransform(): Transform {
 	return {

@@ -1,5 +1,5 @@
-import type { BlockNode, TextNode } from "../parsers/bibtexParser";
-import type { Transform } from "../types";
+import type { BlockNode, TextNode } from "../parsers/bibtexParser.ts";
+import type { Transform } from "../types.ts";
 
 export function createResetWhitespaceTransform(
 	keepCommentWhitespace: boolean,

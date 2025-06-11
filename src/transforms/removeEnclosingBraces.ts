@@ -1,4 +1,4 @@
-import type { Transform } from "../types";
+import type { Transform } from "../types.ts";
 
 // if a field's value has double braces {{blah}}, lose the inner brace
 export function createRemoveEnclosingBracesTransform(): Transform {

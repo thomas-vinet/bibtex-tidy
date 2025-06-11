@@ -1,7 +1,7 @@
 import { match, strictEqual } from "node:assert";
 import { spawnSync } from "node:child_process";
-import { BIN_PATH } from "./targets/cli";
-import { test } from "./utils";
+import { BIN_PATH } from "./targets/cli.ts";
+import { test } from "./utils.ts";
 
 test("CLI help", async () => {
 	const proc1 = spawnSync(BIN_PATH, [], {

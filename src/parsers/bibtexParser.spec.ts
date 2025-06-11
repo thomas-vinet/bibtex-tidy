@@ -1,6 +1,6 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { parseBibTeX } from "./bibtexParser";
+import { parseBibTeX } from "./bibtexParser.ts";
 
 describe("BibTeX parser", () => {
 	it("parses whitespace", () => {
