@@ -25,9 +25,10 @@
 	"scripts": {
 		"build": "node build.ts",
 		"serve": "node build.ts --serve",
-		"test": "npm run test:unit && npm run test:e2e",
+		"test": "npm run test:unit && npm run test:e2e && npm run test:new",
 		"test:unit": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info  \"src/**/*.spec.ts*\"",
 		"test:e2e": "node build.ts --no-defs && node -r esbuild-register test/index.ts",
+		"test:new": "node --test test/new/*.test.ts",
 		"typecheck": "tsc --noEmit",
 		"cover": "./scripts/cover.sh",
 		"preversion": "git pull --rebase",
@@ -63,6 +64,7 @@
 		"esbuild-svelte": "^0.9.3",
 		"puppeteer": "^24.10.0",
 		"svelte-preprocess": "^6.0.3",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"yaml": "^2.8.0"
 	}
 }
