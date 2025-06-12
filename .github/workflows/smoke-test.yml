@@ -47,6 +47,7 @@ jobs:
               month        = mar,
               publisher    = {Dead Poet Society}
             }
+
         run: |
           node - <<'NODE'
           import { strict as assert } from 'node:assert';
@@ -59,7 +60,7 @@ jobs:
           const textbox = page.getByRole('textbox', { name: 'BibTeX Editor' });
           await page.getByRole('button', { name: 'Tidy' }).click();
 
-          const output = await textbox.textContent();
+          const output = await textbox.innerText();
           assert.equal(output, process.env.EXPECTED);
 
           await browser.close();
