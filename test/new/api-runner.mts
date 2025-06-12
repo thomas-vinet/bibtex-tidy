@@ -1,9 +1,9 @@
 import test from "node:test";
 import { equal } from "node:assert";
 import { tidy } from "../../bibtex-tidy.js";
-import { iterateSpecs } from "./utils.ts";
+import type { Spec } from "./utils.ts";
 
-iterateSpecs("test/specs", (spec) => {
+export function runTest(spec: Spec) {
 	test(`${spec.title} - JS API`, () => {
 		const result = tidy(spec.input, spec.options);
 		if (spec.expected) {
@@ -20,4 +20,4 @@ iterateSpecs("test/specs", (spec) => {
 			}
 		}
 	});
-});
+}

@@ -28,7 +28,7 @@
 		"test": "npm run test:unit && npm run test:e2e && npm run test:new",
 		"test:unit": "node --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info  \"src/**/*.spec.ts*\"",
 		"test:e2e": "node build.ts --no-defs && node -r esbuild-register test/index.ts",
-		"test:new": "node --test test/new/*.test.ts",
+		"test:new": "node --disable-warning=ExperimentalWarning --import ./test/new/test-register.mts --test-concurrency 1 --test ./test/specs/*.spec.yaml",
 		"typecheck": "tsc --noEmit",
 		"cover": "./scripts/cover.sh",
 		"preversion": "git pull --rebase",
