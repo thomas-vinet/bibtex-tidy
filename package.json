@@ -10,6 +10,7 @@
 	"author": "FlamingTempura",
 	"license": "MIT",
 	"main": "./bibtex-tidy.js",
+	"type": "module",
 	"module": "./bibtex-tidy.js",
 	"types": "./bibtex-tidy.d.ts",
 	"man": "./bibtex-tidy.0",

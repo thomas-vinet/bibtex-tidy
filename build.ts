@@ -117,6 +117,7 @@ const jsLibBuildOptions: BuildOptions = {
 	outfile: "bibtex-tidy.js",
 	platform: "node",
 	write: true,
+	format: "esm",
 };
 
 const cliBuildOptions: BuildOptions = {
@@ -128,6 +129,7 @@ const cliBuildOptions: BuildOptions = {
 	sourcemap: env.NODE_ENV === "coverage" ? "inline" : false,
 	sourceRoot: "./",
 	target: [NODE_TARGET],
+	format: "esm",
 };
 
 async function generateOptionTypes() {

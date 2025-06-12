@@ -7,41 +7,18 @@
  * using `npm run build`. Edit files in './src' then rebuild.
  **/
 
-"use strict";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __typeError = (msg) => {
   throw TypeError(msg);
 };
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
 var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 
 // src/cli/cli.ts
-var import_node_assert = __toESM(require("assert"));
-var import_node_fs = require("fs");
-var import_node_process = require("process");
+import assert from "assert";
+import { promises as fsp } from "fs";
+import { argv, exit, versions } from "process";
 
 // src/__generated__/manPage.ts
 var manPage = [
@@ -5322,31 +5299,31 @@ function argsToOptions(argv2, skipInputArgs) {
 }
 
 // src/cli/cli.ts
-var { readFile, writeFile, copyFile } = import_node_fs.promises;
-var nodeVer = Number(import_node_process.versions.node.split(".")[0]);
+var { readFile, writeFile, copyFile } = fsp;
+var nodeVer = Number(versions.node.split(".")[0]);
 if (nodeVer < 12) {
   console.error("bibtex-tidy requires Node.js v12.0.0 or later");
-  (0, import_node_process.exit)(1);
+  exit(1);
 }
 async function start() {
   const hasStdin = !process.stdin.isTTY && process.env.PRE_COMMIT !== "1";
   const { inputFiles, options, unknownArgs } = argsToOptions(
-    import_node_process.argv.slice(2),
+    argv.slice(2),
     hasStdin
   );
   if (unknownArgs.length > 0) {
     const plural = unknownArgs.length > 1 ? "s" : "";
     console.error(`Unknown option${plural}: ${unknownArgs.join(", ")}`);
     console.error(`Try 'bibtex-tidy --help for more information.`);
-    (0, import_node_process.exit)(1);
+    exit(1);
   }
   if (options.version) {
     console.log(`v${version}`);
-    (0, import_node_process.exit)(0);
+    exit(0);
   }
   if (options.help || inputFiles.length === 0 && !hasStdin) {
     console.log(manPage.join("\n"));
-    (0, import_node_process.exit)(0);
+    exit(0);
   }
   const deprecatedStdInFlag = inputFiles.includes("-");
   const outputToStdout = !options.outputPath && !options.modify;
@@ -5415,7 +5392,7 @@ async function tidyInputFiles(inputFiles, options) {
       process.exit(1);
     }
     console.log("Tidying...");
-    (0, import_node_assert.default)(inputFiles[0]);
+    assert(inputFiles[0]);
     const result = tidy(await readFile(inputFiles[0], "utf8"), options);
     if (options.outputPath) {
       await tidyToOutputFile(result, options.outputPath, options);

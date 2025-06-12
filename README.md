@@ -249,7 +249,7 @@ npm install bibtex-tidy
 ```
 
 ```js
-const tidy = require('bibtex-tidy');
+import { tidy } from 'bibtex-tidy';
 const bibtex = fs.readFileSync('references.bib', 'utf8');
 tidy.tidy(bibtex, { curly: true });
 ```
