@@ -1,4 +1,4 @@
-import type { Options } from "../../src/optionUtils.ts";
+import type { Options } from "../../../src/optionUtils.ts";
 
 export type Spec = {
 	title: string;

@@ -1,14 +1,17 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 
+import { randomBytes } from "node:crypto";
+import { writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { CLIOptions } from "../../src/optionUtils.ts";
-import { optionsToCLIArgs } from "../../src/optionsToCLIArgs.ts";
+import type { CLIOptions } from "../../../src/optionUtils.ts";
+import { optionsToCLIArgs } from "../../../src/optionsToCLIArgs.ts";
 
-export const TMP_DIR = join(__dirname, "..", "..", ".tmp");
+export const TMP_DIR = tmpdir();
 export const BIN_PATH =
 	process.env.BIBTEX_TIDY_BIN ??
-	join(__dirname, "..", "..", "bin", "bibtex-tidy");
+	join(import.meta.dirname, "..", "..", "..", "bin", "bibtex-tidy");
 
 mkdirSync(TMP_DIR, { recursive: true });
 
@@ -71,4 +74,16 @@ export function testCLI(
 	}
 
 	return { bibtexs: tidiedOutputs, warnings, stdout: proc.stdout };
+}
+
+export async function tmpfile(
+	bibtex: string,
+	filename?: string,
+): Promise<string> {
+	const file = join(
+		TMP_DIR,
+		filename ?? `tmp${randomBytes(16).toString("hex")}.bib`,
+	);
+	await writeFile(file, bibtex);
+	return file;
 }

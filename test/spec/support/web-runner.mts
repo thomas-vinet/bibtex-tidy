@@ -1,13 +1,20 @@
 import { equal } from "node:assert";
 import { join } from "node:path";
-import test, { after, afterEach } from "node:test";
+import test, { afterEach } from "node:test";
 import type { EditorView } from "@codemirror/view";
 import puppeteer, { type ElementHandle, type Page } from "puppeteer";
-import type { Warning } from "../../src/index.ts";
-import { type Options, normalizeOptions } from "../../src/optionUtils.ts";
+import type { Warning } from "../../../src/index.ts";
+import { type Options, normalizeOptions } from "../../../src/optionUtils.ts";
 import type { Spec } from "./utils.ts";
 
-const WEB_ROOT = join(import.meta.dirname, "..", "..", "docs", "index.html");
+const WEB_ROOT = join(
+	import.meta.dirname,
+	"..",
+	"..",
+	"..",
+	"docs",
+	"index.html",
+);
 
 declare global {
 	interface Window {

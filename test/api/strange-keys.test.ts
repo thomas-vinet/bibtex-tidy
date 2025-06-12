@@ -1,16 +1,15 @@
 import { equal, notEqual, strictEqual } from "node:assert";
-import { bibtex, bibtexTidy, test } from "./utils.ts";
+import test from "node:test";
+import { tidy } from "../../bibtex-tidy.js";
 
-const input = bibtex`
-@article{ strange(key)=(has_odd-characters?:*£"!<>/ ,
+const input = `@article{ strange(key)=(has_odd-characters?:*£"!<>/ ,
   title={Foo}
 }
 @article{
   title={An entry with no key}
 }`;
 
-const output = bibtex`
-@article{strange(key)=(has_odd-characters?:*£"!<>/,
+const output = `@article{strange(key)=(has_odd-characters?:*£"!<>/,
   title         = {Foo}
 }
 @article{
@@ -19,41 +18,35 @@ const output = bibtex`
 `;
 
 const invalidInputs = [
-	bibtex`
-@ARTICLE {invalid{,
+	`@ARTICLE {invalid{,
   title={Foo}
 }`,
-	bibtex`
-@ARTICLE {invalid$,
+	`@ARTICLE {invalid$,
   title={Foo}
 }`,
-	bibtex`
-@ARTICLE {invalid%,
+	`@ARTICLE {invalid%,
   title={Foo}
 }`,
-	bibtex`
-@ARTICLE {invalid#,
+	`@ARTICLE {invalid#,
   title={Foo}
 }`,
-	bibtex`
-@ARTICLE {invalid~,
+	`@ARTICLE {invalid~,
   title={Foo}
 }`,
 ];
 
-const invalidInputWithSpaces = bibtex`
-@ARTICLE {in valid,
+const invalidInputWithSpaces = `@ARTICLE {in valid,
 title={Foo}
 }`;
 
-test("strange characters in citation key", async () => {
-	const tidied = await bibtexTidy(input);
+test("strange characters in citation key", () => {
+	const tidied = tidy(input);
 	strictEqual(tidied.bibtex, output);
 
 	for (const input of invalidInputs) {
 		let err: unknown;
 		try {
-			await bibtexTidy(input);
+			tidy(input);
 		} catch (e) {
 			err = e;
 		}
@@ -65,7 +58,7 @@ test("strange characters in citation key", async () => {
 	}
 	let err: unknown;
 	try {
-		await bibtexTidy(invalidInputWithSpaces);
+		tidy(invalidInputWithSpaces);
 	} catch (e) {
 		err = e;
 	}

@@ -1,16 +1,14 @@
 import { match, strictEqual } from "node:assert";
 import { spawnSync } from "node:child_process";
-import { BIN_PATH } from "./targets/cli.ts";
-import { bibtex, test, tmpfile } from "./utils.ts";
+import test from "node:test";
+import { BIN_PATH, tmpfile } from "./support/cli.ts";
 
-const input = bibtex`
-@article{a,
+const input = `@article{a,
     number={1},
     title={A}
 }`;
 
-const output = bibtex`
-@article{a,
+const output = `@article{a,
   number        = {1},
   title         = {A}
 }
@@ -18,19 +16,16 @@ const output = bibtex`
 
 test("CLI should accept input from a file (v2 flag)", async () => {
 	const path = await tmpfile(input);
-	const proc1 = spawnSync(BIN_PATH, [path, "--v2"], { encoding: "utf8" });
-	strictEqual(proc1.stdout, output);
+	const proc = spawnSync(BIN_PATH, [path, "--v2"], { encoding: "utf8" });
+	strictEqual(proc.stdout, output);
 });
 
 test("CLI should not allow multiple input files without --modify (v2 flag)", async () => {
 	const path1 = await tmpfile(input);
 	const path2 = await tmpfile(input);
-	const proc1 = spawnSync(BIN_PATH, [path1, path2, "--v2"], {
+	const proc = spawnSync(BIN_PATH, [path1, path2, "--v2"], {
 		encoding: "utf8",
 	});
-	strictEqual(proc1.status, 1);
-	match(
-		proc1.stderr,
-		/Only one input file permitted unless using --modify\/-m/,
-	);
+	strictEqual(proc.status, 1);
+	match(proc.stderr, /Only one input file permitted unless using --modify\/-m/);
 });

@@ -2,11 +2,11 @@ import { equal } from "node:assert";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 import test from "node:test";
-import type { CLIOptions } from "../../src/optionUtils.ts";
-import { optionsToCLIArgs } from "../../src/optionsToCLIArgs.ts";
+import type { CLIOptions } from "../../../src/optionUtils.ts";
+import { optionsToCLIArgs } from "../../../src/optionsToCLIArgs.ts";
 import type { Spec } from "./utils.ts";
 
-const BIN_PATH = process.env.BIBTEX_TIDY_BIN ?? join("bin", "bibtex-tidy");
+const BIN_PATH = join("bin", "bibtex-tidy");
 
 type CLIResult = {
 	output: string;

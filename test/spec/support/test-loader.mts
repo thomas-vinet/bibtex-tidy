@@ -30,7 +30,7 @@ export async function load(
 		${platforms
 			.map(
 				(platform) => `
-			import { runTest as ${platform} } from '../new/${platform}-runner.mts';
+			import { runTest as ${platform} } from './support/${platform}-runner.mts';
 			for (const spec of specs) ${platform}(spec);
 		`,
 			)

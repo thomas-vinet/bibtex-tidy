@@ -1,16 +1,14 @@
 import { match, strictEqual } from "node:assert";
 import { spawnSync } from "node:child_process";
-import { BIN_PATH } from "./targets/cli.ts";
-import { bibtex, test } from "./utils.ts";
+import test from "node:test";
+import { BIN_PATH } from "./support/cli.ts";
 
-const input = bibtex`
-@article{a,
+const input = `@article{a,
     number={1},
     title={A}
 }`;
 
-const output = bibtex`
-@article{a,
+const output = `@article{a,
   number        = {1},
   title         = {A}
 }

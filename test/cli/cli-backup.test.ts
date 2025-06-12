@@ -1,10 +1,10 @@
 import { match, strictEqual } from "node:assert";
 import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
-import { BIN_PATH } from "./targets/cli.ts";
-import { bibtex, test, tmpfile } from "./utils.ts";
+import test from "node:test";
+import { BIN_PATH, tmpfile } from "./support/cli.ts";
 
-const input = bibtex`@article{a,number={1},title={A}}`;
+const input = "@article{a,number={1},title={A}}";
 
 test("CLI should allowing creating backup in modify mode", async () => {
 	const path = await tmpfile(input);
