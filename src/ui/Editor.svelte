@@ -50,6 +50,10 @@ onMount(() => {
 
 				EditorState.allowMultipleSelections.of(true),
 
+				EditorView.contentAttributes.of({
+					"aria-label": "BibTeX Editor",
+				}),
+
 				// Highlight matching brackets
 				bracketMatching(),
 
