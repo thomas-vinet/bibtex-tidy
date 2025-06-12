@@ -1,7 +1,7 @@
-import test from "node:test";
 import { equal } from "node:assert";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
+import test from "node:test";
 import type { CLIOptions } from "../../src/optionUtils.ts";
 import { optionsToCLIArgs } from "../../src/optionsToCLIArgs.ts";
 import type { Spec } from "./utils.ts";

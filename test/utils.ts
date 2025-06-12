@@ -11,7 +11,6 @@ import { type APIResult, testAPI } from "./targets/api.ts";
 import { type CLIResult, TMP_DIR, testCLI } from "./targets/cli.ts";
 import { type WebResult, teardown, testWeb } from "./targets/web.ts";
 
-
 const queue: (() => Promise<void>)[] = [];
 
 let isRunning = false;

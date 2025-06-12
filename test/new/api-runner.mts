@@ -1,5 +1,5 @@
-import test from "node:test";
 import { equal } from "node:assert";
+import test from "node:test";
 import { tidy } from "../../bibtex-tidy.js";
 import type { Spec } from "./utils.ts";
 
