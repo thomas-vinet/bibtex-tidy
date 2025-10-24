@@ -11,11 +11,11 @@ input: |
   }
 expected: |
   @article{test,
-    doi        = {10.0000/abcdefg}
+    doi           = {10.0000/abcdefg}
   }
-  @article{test,
-    doi        = {10.0000/abcdefg}
+  @article{test2,
+    doi           = {10.0000/abcdefg}
   }
-  @article{test,
-    doi        = {10.0000/abcdefg}
+  @article{test3,
+    doi           = {10.0000/abcdefg}
   }
