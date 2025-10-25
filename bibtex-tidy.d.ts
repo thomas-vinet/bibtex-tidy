@@ -25,6 +25,12 @@ export type BibTeXTidyOptions = {
 	 */
 	outputPath?: string;
 	/**
+	 * Config path
+	 *
+	 * Reads option from a specified path. Other options provided via the CLI overwrite those in the config file.
+	 */
+	config?: string;
+	/**
 	 * Modify input files
 	 *
 	 * Overwrite the original input files with the tidied result. This is enabled by default but will be disabled by default in v2. For v1, use --no-modify to output to stdout instead of overwriting the input files.

@@ -43,6 +43,10 @@ var manPage = [
   "      Write output to specified path. When omitted (and -m/--modify is not used),",
   "      the result will be printed to stdout.",
   "      ",
+  "  --config, -c",
+  "      Reads option from a specified path. Other options provided via the CLI",
+  "      overwrite those in the config file.",
+  "      ",
   "  --modify, -m, --no-modify",
   "      Overwrite the original input files with the tidied result. This is enabled by",
   "      default but will be disabled by default in v2. For v1, use --no-modify to",
@@ -574,6 +578,16 @@ var optionDefinitions = [
     defaultValue: void 0
   },
   {
+    key: "config",
+    cli: { "--config": (args) => args[0], "-c": (args) => args[0] },
+    title: "Config path",
+    description: [
+      "Reads option from a specified path. Other options provided via the CLI overwrite those in the config file."
+    ],
+    type: "string",
+    defaultValue: void 0
+  },
+  {
     key: "modify",
     cli: { "--modify": true, "-m": true, "--no-modify": false },
     title: "Modify input files",
@@ -1055,6 +1069,23 @@ function normalizeOptions(options) {
       return [key, value];
     })
   );
+}
+var cliOptions = {};
+for (const opt of optionDefinitions) {
+  for (const [cliArg, val] of Object.entries(opt.cli)) {
+    cliOptions[cliArg] = { option: opt.key, value: val };
+  }
+}
+function parseOptionFromKeyValues(key, values) {
+  const cliOption = cliOptions[key];
+  if (!cliOption) {
+    return void 0;
+  }
+  if (typeof cliOption.value === "function") {
+    return [cliOption.option, cliOption.value(values)];
+  } else {
+    return [cliOption.option, cliOption.value];
+  }
 }
 
 // src/parsers/bibtexParser.ts
@@ -1539,6 +1570,24 @@ function createBlankLinesTransform() {
 function isComment(node) {
   var _a;
   return node.type === "text" || ((_a = node.block) == null ? void 0 : _a.type) === "comment";
+}
+
+// src/transforms/cleanDoi.ts
+function createCleanDoiTransform() {
+  return {
+    name: "clean-doi",
+    apply: (ast) => {
+      for (const field of ast.fields()) {
+        if (field.name.toLocaleLowerCase() === "doi") {
+          for (const entry of field.value.concat) {
+            entry.value = entry.value.replace("https://doi.org/", "").replace("doi.org/", "");
+          }
+          ast.invalidateField(field);
+        }
+      }
+      return void 0;
+    }
+  };
 }
 
 // src/transforms/dropAllCaps.ts
@@ -5122,6 +5171,7 @@ function generateTransformPipeline(options) {
     pipeline.push(createBlankLinesTransform());
   }
   pipeline.push(createAlignValuesTransform(options.align));
+  pipeline.push(createCleanDoiTransform());
   pipeline.push(createFieldCommasTransform((_a = options.trailingCommas) != null ? _a : false));
   pipeline.push(createWrapValuesTransform(indent, options.align, options.wrap));
   return sortPipeline(pipeline);
@@ -5272,10 +5322,10 @@ function parseLongCLIOption(arg) {
 }
 
 // src/cli/argsToOptions.ts
-var cliOptions = {};
+var cliOptions2 = {};
 for (const opt of optionDefinitions) {
   for (const [cliArg, val] of Object.entries(opt.cli)) {
-    cliOptions[cliArg] = { option: opt.key, value: val };
+    cliOptions2[cliArg] = { option: opt.key, value: val };
   }
 }
 function argsToOptions(argv2, skipInputArgs) {
@@ -5284,18 +5334,35 @@ function argsToOptions(argv2, skipInputArgs) {
   const inputFiles = inputPaths != null ? inputPaths : [];
   const unknownArgs = [];
   for (const [key, values] of Object.entries(kvs)) {
-    const cliOption = cliOptions[key];
-    if (!cliOption) {
+    const configParsed = parseOptionFromKeyValues(key, values);
+    if (configParsed === void 0) {
       unknownArgs.push(key);
-      continue;
-    }
-    if (typeof cliOption.value === "function") {
-      options[cliOption.option] = cliOption.value(values);
     } else {
-      options[cliOption.option] = cliOption.value;
+      const [option, value] = configParsed;
+      options[option] = value;
     }
   }
   return { inputFiles, options, unknownArgs };
+}
+
+// src/configUtils.ts
+function configToOptions(config) {
+  const entries = config.trim().split("\n");
+  const options = {};
+  for (const entry of entries) {
+    const index = entry.indexOf(":");
+    if (index === -1) {
+      continue;
+    }
+    const key = "--" + entry.substring(0, index).trim();
+    const values = entry.substring(index + 1).trim().split(",").map((v) => v.trim());
+    const configParsed = parseOptionFromKeyValues(key, values);
+    if (configParsed != void 0) {
+      const [option, value] = configParsed;
+      options[option] = value;
+    }
+  }
+  return options;
 }
 
 // src/cli/cli.ts
@@ -5317,21 +5384,22 @@ async function start() {
     console.error(`Try 'bibtex-tidy --help for more information.`);
     exit(1);
   }
-  if (options.version) {
+  const configOptions = await parseConfig(options);
+  if (configOptions.version) {
     console.log(`v${version}`);
     exit(0);
   }
-  if (options.help || inputFiles.length === 0 && !hasStdin) {
+  if (configOptions.help || inputFiles.length === 0 && !hasStdin) {
     console.log(manPage.join("\n"));
     exit(0);
   }
   const deprecatedStdInFlag = inputFiles.includes("-");
-  const outputToStdout = !options.outputPath && !options.modify;
-  if (options.quiet || outputToStdout) {
+  const outputToStdout = !configOptions.outputPath && !configOptions.modify;
+  if (configOptions.quiet || outputToStdout) {
     setSilent(true);
   }
   if (inputFiles.length === 0) {
-    await tidyStdIn(options);
+    await tidyStdIn(configOptions);
   } else if (deprecatedStdInFlag) {
     console.error(
       'Interpreting "-" as stdin. NOTICE: as of v1.10.0 "-" can be omitted and will be invalid in v2. Stdin is read when no input file is specified.'
@@ -5340,9 +5408,9 @@ async function start() {
       console.error('Input files cannot be specified with "-"');
       process.exit(1);
     }
-    await tidyStdIn(options);
+    await tidyStdIn(configOptions);
   } else {
-    await tidyInputFiles(inputFiles, options);
+    await tidyInputFiles(inputFiles, configOptions);
   }
 }
 async function tidyStdIn(options) {
@@ -5441,5 +5509,13 @@ async function readStdin() {
 var origLog = console.log;
 function setSilent(silent) {
   console.log = silent ? () => void 0 : origLog;
+}
+async function parseConfig(options) {
+  if (options.config) {
+    const content = await readFile(options.config, "utf8");
+    return { ...configToOptions(content), ...options };
+  } else {
+    return options;
+  }
 }
 start();

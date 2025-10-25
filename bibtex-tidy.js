@@ -393,6 +393,16 @@ var optionDefinitions = [
     defaultValue: void 0
   },
   {
+    key: "config",
+    cli: { "--config": /* @__PURE__ */ __name((args) => args[0], "--config"), "-c": /* @__PURE__ */ __name((args) => args[0], "-c") },
+    title: "Config path",
+    description: [
+      "Reads option from a specified path. Other options provided via the CLI overwrite those in the config file."
+    ],
+    type: "string",
+    defaultValue: void 0
+  },
+  {
     key: "modify",
     cli: { "--modify": true, "-m": true, "--no-modify": false },
     title: "Modify input files",
@@ -876,6 +886,12 @@ function normalizeOptions(options) {
   );
 }
 __name(normalizeOptions, "normalizeOptions");
+var cliOptions = {};
+for (const opt of optionDefinitions) {
+  for (const [cliArg, val] of Object.entries(opt.cli)) {
+    cliOptions[cliArg] = { option: opt.key, value: val };
+  }
+}
 
 // src/parsers/bibtexParser.ts
 var RootNode = class {
@@ -1409,6 +1425,25 @@ function isComment(node) {
   return node.type === "text" || node.block?.type === "comment";
 }
 __name(isComment, "isComment");
+
+// src/transforms/cleanDoi.ts
+function createCleanDoiTransform() {
+  return {
+    name: "clean-doi",
+    apply: /* @__PURE__ */ __name((ast) => {
+      for (const field of ast.fields()) {
+        if (field.name.toLocaleLowerCase() === "doi") {
+          for (const entry of field.value.concat) {
+            entry.value = entry.value.replace("https://doi.org/", "").replace("doi.org/", "");
+          }
+          ast.invalidateField(field);
+        }
+      }
+      return void 0;
+    }, "apply")
+  };
+}
+__name(createCleanDoiTransform, "createCleanDoiTransform");
 
 // src/transforms/dropAllCaps.ts
 function createDropAllCapsTransform() {
@@ -5028,6 +5063,7 @@ function generateTransformPipeline(options) {
     pipeline.push(createBlankLinesTransform());
   }
   pipeline.push(createAlignValuesTransform(options.align));
+  pipeline.push(createCleanDoiTransform());
   pipeline.push(createFieldCommasTransform(options.trailingCommas ?? false));
   pipeline.push(createWrapValuesTransform(indent, options.align, options.wrap));
   return sortPipeline(pipeline);

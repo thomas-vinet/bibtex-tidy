@@ -78,6 +78,10 @@ bibtex-tidy references.bib
       Write output to specified path. When omitted (and -m/--modify is not used),
       the result will be printed to stdout.
       
+  --config, -c
+      Reads option from a specified path. Other options provided via the CLI
+      overwrite those in the config file.
+      
   --modify, -m, --no-modify
       Overwrite the original input files with the tidied result. This is enabled by
       default but will be disabled by default in v2. For v1, use --no-modify to

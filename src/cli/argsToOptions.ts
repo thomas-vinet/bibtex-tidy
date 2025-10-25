@@ -1,14 +1,14 @@
 import { optionDefinitions } from "../optionDefinitions.ts";
-import type { CLIOptions } from "../optionUtils.ts";
+import { parseOptionFromKeyValues, type CLIOptions } from "../optionUtils.ts";
 import { parseCLIArguments } from "../parsers/argsParser.ts";
 
 const cliOptions: Record<string, { option: keyof CLIOptions; value: unknown }> =
-	{};
+  {};
 
 for (const opt of optionDefinitions) {
-	for (const [cliArg, val] of Object.entries(opt.cli)) {
-		cliOptions[cliArg] = { option: opt.key as keyof CLIOptions, value: val };
-	}
+  for (const [cliArg, val] of Object.entries(opt.cli)) {
+    cliOptions[cliArg] = { option: opt.key as keyof CLIOptions, value: val };
+  }
 }
 
 /**
@@ -19,34 +19,29 @@ for (const opt of optionDefinitions) {
  * would be assumed to be the input file)
  */
 export function argsToOptions(
-	argv: string[],
-	skipInputArgs?: boolean,
+  argv: string[],
+  skipInputArgs?: boolean,
 ): {
-	inputFiles: string[];
-	options: CLIOptions;
-	unknownArgs: string[];
+  inputFiles: string[];
+  options: CLIOptions;
+  unknownArgs: string[];
 } {
-	const { "": inputPaths, ...kvs } = parseCLIArguments(argv, skipInputArgs);
+  const { "": inputPaths, ...kvs } = parseCLIArguments(argv, skipInputArgs);
 
-	const options: CLIOptions = {};
-	const inputFiles = inputPaths ?? [];
-	const unknownArgs: string[] = [];
+  const options: CLIOptions = {};
+  const inputFiles = inputPaths ?? [];
+  const unknownArgs: string[] = [];
 
-	for (const [key, values] of Object.entries(kvs)) {
-		const cliOption = cliOptions[key];
-		if (!cliOption) {
-			unknownArgs.push(key);
-			continue;
-		}
+  for (const [key, values] of Object.entries(kvs)) {
+    const configParsed = parseOptionFromKeyValues(key, values);
+    if (configParsed === undefined) {
+      unknownArgs.push(key);
+    } else {
+      const [option, value] = configParsed;
+      // @ts-ignore
+      options[option] = value;
+    }
+  }
 
-		if (typeof cliOption.value === "function") {
-			options[cliOption.option] = cliOption.value(values);
-		} else {
-			//@ts-expect-error tricky typing
-			options[cliOption.option] =
-				cliOption.value as CLIOptions[typeof cliOption.option];
-		}
-	}
-
-	return { inputFiles, options, unknownArgs };
+  return { inputFiles, options, unknownArgs };
 }
