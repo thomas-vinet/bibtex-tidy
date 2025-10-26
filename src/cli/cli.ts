@@ -4,10 +4,10 @@ import { argv, exit, versions } from "node:process";
 import { manPage } from "../__generated__/manPage.ts";
 import type { BibTeXTidyOptions } from "../__generated__/optionsType.ts";
 import { version } from "../__generated__/version.ts";
-import { type BibTeXTidyResult, tidy } from "../index.ts";
-import { argsToOptions } from "./argsToOptions.ts";
 import { configToOptions } from "../configUtils.ts";
+import { type BibTeXTidyResult, tidy } from "../index.ts";
 import type { CLIOptions } from "../optionUtils.ts";
+import { argsToOptions } from "./argsToOptions.ts";
 
 const { readFile, writeFile, copyFile } = fsp;
 
@@ -15,198 +15,201 @@ const nodeVer = Number(versions.node.split(".")[0]);
 
 // Node v12 needed for Object.entries.
 if (nodeVer < 12) {
-  console.error("bibtex-tidy requires Node.js v12.0.0 or later");
-  exit(1);
+	console.error("bibtex-tidy requires Node.js v12.0.0 or later");
+	exit(1);
 }
 
 async function start(): Promise<void> {
-  // process.stdin.isTTY seems to be true only if no input is piped to stdin. HACK - false
-  // positive with pre-commit script.
-  const hasStdin = !process.stdin.isTTY && process.env.PRE_COMMIT !== "1";
+	// process.stdin.isTTY seems to be true only if no input is piped to stdin. HACK - false
+	// positive with pre-commit script.
+	const hasStdin = !process.stdin.isTTY && process.env.PRE_COMMIT !== "1";
 
-  const { inputFiles, options, unknownArgs } = argsToOptions(
-    argv.slice(2),
-    hasStdin,
-  );
+	const cliOptions = argsToOptions(argv.slice(2), hasStdin);
 
-  if (unknownArgs.length > 0) {
-    const plural = unknownArgs.length > 1 ? "s" : "";
-    console.error(`Unknown option${plural}: ${unknownArgs.join(", ")}`);
-    console.error(`Try 'bibtex-tidy --help for more information.`);
-    exit(1);
-  }
+	const configOptions = await parseConfig(cliOptions.options.config);
 
-  const configOptions = await parseConfig(options);
+	const unknownArgs = cliOptions.unknownArgs.concat(configOptions.unknownArgs);
+	const options = { ...configOptions.options, ...cliOptions.options };
+	const inputFiles = cliOptions.inputFiles;
 
-  if (configOptions.version) {
-    console.log(`v${version}`);
-    exit(0);
-  }
+	if (unknownArgs.length > 0) {
+		const plural = unknownArgs.length > 1 ? "s" : "";
+		console.error(`Unknown option${plural}: ${unknownArgs.join(", ")}`);
+		console.error(`Try 'bibtex-tidy --help for more information.`);
+		exit(1);
+	}
 
-  if (configOptions.help || (inputFiles.length === 0 && !hasStdin)) {
-    console.log(manPage.join("\n"));
-    exit(0);
-  }
+	if (options.version) {
+		console.log(`v${version}`);
+		exit(0);
+	}
 
-  const deprecatedStdInFlag = inputFiles.includes("-");
+	if (options.help || (inputFiles.length === 0 && !hasStdin)) {
+		console.log(manPage.join("\n"));
+		exit(0);
+	}
 
-  const outputToStdout = !configOptions.outputPath && !configOptions.modify;
+	const deprecatedStdInFlag = inputFiles.includes("-");
 
-  if (configOptions.quiet || outputToStdout) {
-    setSilent(true);
-  }
+	const outputToStdout = !options.outputPath && !options.modify;
 
-  if (inputFiles.length === 0) {
-    await tidyStdIn(configOptions);
-  } else if (deprecatedStdInFlag) {
-    console.error(
-      'Interpreting "-" as stdin. NOTICE: as of v1.10.0 "-" can be omitted and will be invalid in v2. Stdin is read when no input file is specified.',
-    );
+	if (options.quiet || outputToStdout) {
+		setSilent(true);
+	}
 
-    if (inputFiles.length > 1) {
-      console.error('Input files cannot be specified with "-"');
-      process.exit(1);
-    }
+	if (inputFiles.length === 0) {
+		await tidyStdIn(options);
+	} else if (deprecatedStdInFlag) {
+		console.error(
+			'Interpreting "-" as stdin. NOTICE: as of v1.10.0 "-" can be omitted and will be invalid in v2. Stdin is read when no input file is specified.',
+		);
 
-    await tidyStdIn(configOptions);
-  } else {
-    await tidyInputFiles(inputFiles, configOptions);
-  }
+		if (inputFiles.length > 1) {
+			console.error('Input files cannot be specified with "-"');
+			process.exit(1);
+		}
+
+		await tidyStdIn(options);
+	} else {
+		await tidyInputFiles(inputFiles, options);
+	}
 }
 
 async function tidyStdIn(options: BibTeXTidyOptions) {
-  if (options.modify) {
-    console.error("--modify/-m is only valid when specifying input files");
-    process.exit(1);
-  }
+	if (options.modify) {
+		console.error("--modify/-m is only valid when specifying input files");
+		process.exit(1);
+	}
 
-  if (options.backup) {
-    console.error("--backup is only valid when specifying input files");
-    process.exit(1);
-  }
+	if (options.backup) {
+		console.error("--backup is only valid when specifying input files");
+		process.exit(1);
+	}
 
-  console.log("Tidying...");
-  const result = tidy(await readStdin(), options);
+	console.log("Tidying...");
+	const result = tidy(await readStdin(), options);
 
-  if (options.outputPath) {
-    await tidyToOutputFile(result, options.outputPath, options);
-  } else {
-    tidyToStdout(result);
-  }
+	if (options.outputPath) {
+		await tidyToOutputFile(result, options.outputPath, options);
+	} else {
+		tidyToStdout(result);
+	}
 }
 
 async function tidyInputFiles(
-  inputFiles: string[],
-  options: BibTeXTidyOptions,
+	inputFiles: string[],
+	options: BibTeXTidyOptions,
 ) {
-  const usingDeprecatedStdio =
-    !options.v2 && !options.outputPath && !options.modify;
+	const usingDeprecatedStdio =
+		!options.v2 && !options.outputPath && !options.modify;
 
-  if (usingDeprecatedStdio) {
-    console.warn(
-      "NOTICE: In v2 you will need to specify --modify/-m to modify the input file.",
-    );
-    options.modify = true;
-    options.backup = options.backup ?? true;
-    setSilent(false);
-  }
+	if (usingDeprecatedStdio) {
+		console.warn(
+			"NOTICE: In v2 you will need to specify --modify/-m to modify the input file.",
+		);
+		options.modify = true;
+		options.backup = options.backup ?? true;
+		setSilent(false);
+	}
 
-  if (options.modify) {
-    if (options.outputPath) {
-      console.error("--modify/-m is not valid when specifying an output file");
-      process.exit(1);
-    }
+	if (options.modify) {
+		if (options.outputPath) {
+			console.error("--modify/-m is not valid when specifying an output file");
+			process.exit(1);
+		}
 
-    console.log("Tidying...");
-    for (const inputFile of inputFiles) {
-      const result = tidy(await readFile(inputFile, "utf8"), options);
-      await tidyToOutputFile(result, inputFile, options);
-    }
-  } else if (inputFiles.length > 1) {
-    console.error("Only one input file permitted unless using --modify/-m");
-    process.exit(1);
-  } else {
-    if (options.backup) {
-      console.error("--backup is only permitted when --modify/-m is provided");
-      process.exit(1);
-    }
+		console.log("Tidying...");
+		for (const inputFile of inputFiles) {
+			const result = tidy(await readFile(inputFile, "utf8"), options);
+			await tidyToOutputFile(result, inputFile, options);
+		}
+	} else if (inputFiles.length > 1) {
+		console.error("Only one input file permitted unless using --modify/-m");
+		process.exit(1);
+	} else {
+		if (options.backup) {
+			console.error("--backup is only permitted when --modify/-m is provided");
+			process.exit(1);
+		}
 
-    console.log("Tidying...");
-    assert(inputFiles[0]);
-    const result = tidy(await readFile(inputFiles[0], "utf8"), options);
+		console.log("Tidying...");
+		assert(inputFiles[0]);
+		const result = tidy(await readFile(inputFiles[0], "utf8"), options);
 
-    if (options.outputPath) {
-      await tidyToOutputFile(result, options.outputPath, options);
-    } else {
-      tidyToStdout(result);
-    }
-  }
+		if (options.outputPath) {
+			await tidyToOutputFile(result, options.outputPath, options);
+		} else {
+			tidyToStdout(result);
+		}
+	}
 }
 
 function tidyToStdout(result: BibTeXTidyResult) {
-  process.stdout.write(result.bibtex);
+	process.stdout.write(result.bibtex);
 }
 
 async function tidyToOutputFile(
-  result: BibTeXTidyResult,
-  path: string,
-  options: BibTeXTidyOptions,
+	result: BibTeXTidyResult,
+	path: string,
+	options: BibTeXTidyOptions,
 ) {
-  if (options.backup) {
-    await copyFile(path, `${path}.original`);
-  }
+	if (options.backup) {
+		await copyFile(path, `${path}.original`);
+	}
 
-  await writeFile(path, result.bibtex, "utf8");
+	await writeFile(path, result.bibtex, "utf8");
 
-  const log: { level: "info" | "error"; message: string }[] = [];
+	const log: { level: "info" | "error"; message: string }[] = [];
 
-  for (const warning of result.warnings) {
-    log.push({
-      level: "error",
-      message: `${warning.code}: ${warning.message}`,
-    });
-  }
+	for (const warning of result.warnings) {
+		log.push({
+			level: "error",
+			message: `${warning.code}: ${warning.message}`,
+		});
+	}
 
-  log.push({
-    level: "info",
-    message: `Done. Successfully tidied ${result.count} entries.`,
-  });
+	log.push({
+		level: "info",
+		message: `Done. Successfully tidied ${result.count} entries.`,
+	});
 
-  if (options.merge) {
-    const dupes = result.warnings.filter((w) => w.code === "DUPLICATE_ENTRY");
-    log.push({ level: "info", message: `${dupes.length} entries merged` });
-  }
-  if (!options.quiet) {
-    for (const { level, message } of log) {
-      console[level === "error" ? "error" : "log"](message);
-    }
-  }
+	if (options.merge) {
+		const dupes = result.warnings.filter((w) => w.code === "DUPLICATE_ENTRY");
+		log.push({ level: "info", message: `${dupes.length} entries merged` });
+	}
+	if (!options.quiet) {
+		for (const { level, message } of log) {
+			console[level === "error" ? "error" : "log"](message);
+		}
+	}
 }
 
 async function readStdin(): Promise<string> {
-  return new Promise<string>((resolve) => {
-    let bibtex = "";
-    process.stdin
-      .on("data", (chunk) => {
-        bibtex += chunk;
-      })
-      .on("end", () => resolve(bibtex))
-      .setEncoding("utf8");
-  });
+	return new Promise<string>((resolve) => {
+		let bibtex = "";
+		process.stdin
+			.on("data", (chunk) => {
+				bibtex += chunk;
+			})
+			.on("end", () => resolve(bibtex))
+			.setEncoding("utf8");
+	});
 }
 
 const origLog = console.log;
 function setSilent(silent: boolean) {
-  console.log = silent ? () => undefined : origLog;
+	console.log = silent ? () => undefined : origLog;
 }
 
-async function parseConfig(options: CLIOptions): Promise<CLIOptions> {
-  if (options.config) {
-    const content = await readFile(options.config, "utf8");
-    return { ...configToOptions(content), ...options }
-  } else {
-    return options;
-  }
+async function parseConfig(
+	config: string | undefined,
+): Promise<{ unknownArgs: string[]; options: CLIOptions }> {
+	if (config) {
+		const content = await readFile(config, "utf8");
+		return configToOptions(content);
+	} else {
+		return { unknownArgs: [], options: {} };
+	}
 }
 
 start();
